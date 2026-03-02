@@ -1,0 +1,1798 @@
+<!doctype html>
+<html lang="no">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EmblaOS</title>
+  <link rel="icon" href="data:,">
+
+  <style>
+    :root{
+      /* BARBIE ROSA THEME 💖 */
+      --bg0:#2a001f;
+      --bg1:#3a0030;
+
+      --stroke: rgba(255,105,180,.45);
+
+      --text: #fff0f8;
+      --muted: rgba(255,200,230,.85);
+
+      --accent: #ff1493;       /* HOT Barbie pink */
+      --accent2:#ff69b4;       /* Classic pink */
+      --danger:#ff007f;        /* Drama pink */
+
+      --shadow: 0 25px 80px rgba(255,20,147,.35);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: var(--sans);
+      color: var(--text);
+      background:
+        radial-gradient(900px 520px at 18% 6%, rgba(255,20,147,.45), transparent 60%),
+        radial-gradient(820px 520px at 82% 10%, rgba(255,105,180,.40), transparent 60%),
+        radial-gradient(900px 700px at 50% 120%, rgba(255,0,127,.25), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow:hidden;
+    }
+
+    /* Top bar */
+    .topbar{
+      position:fixed; inset: 0 0 auto 0;
+      height: 58px;
+      display:flex;
+      align-items:center;
+      padding: 10px 14px;
+      gap: 12px;
+      background: rgba(0,0,0,.22);
+      border-bottom: 1px solid var(--stroke);
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      overflow: hidden;
+    }
+    .logo{
+      display:flex; align-items:center; gap:10px;
+      padding: 8px 10px;
+      border: 1px solid var(--stroke);
+      border-radius: 999px;
+      background: rgba(255,255,255,.04);
+      box-shadow: 0 10px 25px rgba(0,0,0,.20);
+      user-select:none;
+      white-space:nowrap;
+    }
+    .orb{
+      width: 12px; height: 12px; border-radius: 999px;
+      background: linear-gradient(135deg, #ff1493, #ff69b4, #ff007f);
+      box-shadow: 0 0 0 4px rgba(255,20,147,.18);
+    }
+    .logo b{letter-spacing:.2px}
+    .logo .ver{color:var(--muted); font-size:12px}
+
+    .sys{
+      margin-left:auto;
+      display:flex; align-items:center; gap:10px;
+      user-select:none;
+      flex-wrap:nowrap;
+      justify-content:flex-end;
+      min-width: 0;
+      max-width: calc(100vw - 240px);
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: thin;
+      padding-bottom: 2px;
+    }
+    .sys::-webkit-scrollbar{
+      height: 6px;
+    }
+    .sys::-webkit-scrollbar-thumb{
+      background: rgba(255,105,180,.35);
+      border-radius: 999px;
+    }
+    .sys::-webkit-scrollbar-track{
+      background: transparent;
+    }
+    .pill{
+      padding: 8px 10px;
+      border-radius: 999px;
+      border:1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size: 13px;
+      white-space:nowrap;
+      flex: 0 0 auto;
+    }
+    .pill b{color: var(--text)}
+    .btn{
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, box-shadow .2s ease;
+      font-weight: 650;
+      letter-spacing:.1px;
+      box-shadow: 0 0 20px rgba(255,20,147,.18);
+      flex: 0 0 auto;
+    }
+    .btn:hover{transform: translateY(-1px); background: rgba(255,255,255,.06);}
+    .btn.primary{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none;
+      box-shadow: 0 0 25px rgba(255,20,147,.45);
+    }
+    .btn.primary:hover{
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 0 35px rgba(255,20,147,.65);
+    }
+    .btn.danger{
+      background: rgba(255,0,127,.18);
+      border-color: rgba(255,0,127,.40);
+    }
+    .btn:disabled{opacity:.55; cursor:not-allowed; transform:none;}
+
+    /* Desktop */
+    .desktop{
+      position:fixed;
+      inset: 58px 0 0 0;
+      padding: 16px;
+      z-index: 1;
+    }
+
+    /* Window */
+    .window{
+      position:absolute;
+      width: min(760px, 94vw);
+      height: min(520px, 76vh);
+      border-radius: var(--radius);
+      border:1px solid var(--stroke);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03)),
+        rgba(10,12,26,.55);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .titlebar{
+      height: 44px;
+      display:flex; align-items:center; justify-content:space-between;
+      padding: 10px 10px 10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      cursor: grab;
+      user-select:none;
+    }
+    .titlebar:active{cursor: grabbing;}
+    .titleleft{
+      display:flex; align-items:center; gap:10px;
+      min-width: 0;
+    }
+    .appicon{
+      width: 24px; height: 24px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(255,20,147,.95), rgba(255,105,180,.85));
+      box-shadow: 0 0 0 4px rgba(255,20,147,.14);
+      flex:0 0 auto;
+    }
+    .titletext{
+      display:flex; flex-direction:column;
+      min-width: 0;
+    }
+    .titletext b{
+      font-size: 13px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .titletext span{
+      font-size: 12px;
+      color: var(--muted);
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .winbtns{display:flex; gap:8px; align-items:center;}
+    .wbtn{
+      width: 34px; height: 28px;
+      border-radius: 10px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      display:grid; place-items:center;
+      cursor:pointer;
+      color: rgba(255,255,255,.86);
+    }
+    .wbtn:hover{background: rgba(255,255,255,.06);}
+    .wbtn.close:hover{background: rgba(255,0,127,.22); border-color: rgba(255,0,127,.40);}
+
+    .content{
+      height: calc(100% - 44px);
+      display:grid;
+      grid-template-columns: 260px 1fr;
+    }
+    .sidebar{
+      padding: 12px;
+      border-right:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+    }
+    .sidecard{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+    .sidecard h3{margin: 0 0 8px; font-size: 13px; letter-spacing:.2px}
+    .sidecard p{margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.35}
+    .sideactions{display:flex; flex-direction:column; gap:10px; margin-top: 10px;}
+
+    .main{
+      padding: 12px;
+      overflow:auto;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .card{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .card h2{
+      margin:0 0 8px;
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+    .row{display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .muted{color:var(--muted); font-size: 12.5px; line-height:1.35}
+    .mono{font-family: var(--mono); font-size: 12.5px; color: rgba(255,255,255,.90)}
+
+    /* Progress */
+    .progress{
+      height: 10px; border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      overflow:hidden;
+      margin-top: 8px;
+    }
+    .bar{
+      height:100%;
+      width: 0%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width .25s ease;
+    }
+
+    /* Mini game */
+    .gameWrap{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top: 10px;
+    }
+    .gameBtn{
+      width: 100%;
+      padding: 14px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      font-weight: 900;
+      letter-spacing:.2px;
+      cursor:pointer;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+      box-shadow: 0 0 22px rgba(255,20,147,.18);
+    }
+    .gameBtn:hover{transform: translateY(-1px); background: rgba(255,255,255,.06);}
+    .gameBtn.waiting{cursor:not-allowed; opacity:.85;}
+    .gameBtn.go{
+      background: rgba(255,105,180,.20);
+      border-color: rgba(255,105,180,.40);
+    }
+    .gameBtn.tooSoon{
+      background: rgba(255,0,127,.18);
+      border-color: rgba(255,0,127,.40);
+    }
+    .gameStats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.12);
+    }
+    .gameStats .big{
+      font-family: var(--mono);
+      font-size: 18px;
+      color: rgba(255,255,255,.92);
+      font-weight: 900;
+    }
+    .tapArea{
+      position: relative;
+      min-height: 160px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.12);
+      background:
+        radial-gradient(400px 180px at 20% 30%, rgba(255,105,180,.12), transparent 55%),
+        rgba(0,0,0,.16);
+      overflow: hidden;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 10px;
+    }
+    .tapDot{
+      position: absolute;
+      width: 56px;
+      height: 56px;
+      border-radius: 999px;
+      border: 2px solid rgba(255,255,255,.75);
+      background: linear-gradient(180deg, #ff6ac1, #ff007f);
+      color: #fff;
+      font-size: 21px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 0 30px rgba(255,20,147,.45);
+    }
+    .guessRow{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+    }
+    .guessInput{
+      flex: 1 1 130px;
+      min-width: 120px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+    .guessInput:focus{
+      border-color: rgba(255,105,180,.6);
+      box-shadow: 0 0 0 3px rgba(255,20,147,.18);
+    }
+
+    /* Toasts */
+    .toasts{
+      position: fixed;
+      right: 12px;
+      bottom: 12px;
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      z-index: 80;
+    }
+    .toast{
+      width: min(360px, 92vw);
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,12,26,.72);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 18px 50px rgba(0,0,0,.45);
+      padding: 12px;
+      display:flex; gap:10px;
+      animation: pop .2s ease;
+    }
+    @keyframes pop{from{transform: translateY(10px); opacity:0} to{transform:none; opacity:1}}
+    .toast .ticon{
+      width: 36px; height: 36px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .toast .tmain{min-width:0}
+    .toast b{display:block; font-size: 13px; margin-bottom: 4px}
+    .toast p{margin:0; color: var(--muted); font-size: 12.5px; line-height:1.35}
+    .toast .tx{
+      margin-left:auto;
+      width: 26px; height: 26px;
+      border-radius: 10px;
+      border:1px solid transparent;
+      background: transparent;
+      color: rgba(255,255,255,.75);
+      cursor:pointer;
+      display:grid; place-items:center;
+      flex: 0 0 auto;
+    }
+    .toast .tx:hover{border-color: rgba(255,255,255,.14); background: rgba(255,255,255,.05);}
+
+    /* Overlay (Hyperfokus) */
+    .overlay{
+      position: fixed; inset: 58px 0 0 0;
+      display:none;
+      z-index: 70;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(8px);
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+    }
+    .overlay.show{display:flex;}
+    .lockcard{
+      width: min(520px, 96vw);
+      border-radius: 22px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,12,26,.72);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+    .lockcard h1{margin:0 0 8px; font-size: 18px}
+    .lockcard p{margin:0 0 12px; color: var(--muted); line-height:1.4}
+    .lockrow{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .bigtime{
+      font-family: var(--mono);
+      font-size: 34px;
+      letter-spacing:.6px;
+      margin: 8px 0 12px;
+    }
+    .spark{
+      display:inline-block;
+      padding: 1px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.86);
+      font-size: 12px;
+      margin-left: 6px;
+    }
+
+    /* Boss Mode */
+    body.boss-mode{
+      filter: grayscale(1) contrast(1.05);
+    }
+    body.boss-mode .bossBanner{display:flex;}
+    .bossBanner{
+      position: fixed;
+      inset: 58px 0 auto 0;
+      height: 44px;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index: 90;
+      background: rgba(0,0,0,.55);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(10px);
+      letter-spacing: .6px;
+      font-weight: 900;
+    }
+    .bossBanner span{
+      font-family: var(--mono);
+      font-size: 13px;
+      color: rgba(255,255,255,.92);
+    }
+    .bossBanner .tag{
+      margin-left: 10px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.8);
+      font-weight: 900;
+      font-size: 12px;
+    }
+
+    /* Big text overlays */
+    @keyframes moodPop {
+      0% { transform: scale(0.7); opacity:0; }
+      60% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity:1; }
+    }
+    @keyframes popB {
+      0% { transform: scale(0.6); opacity:0; }
+      60% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity:1; }
+    }
+
+    /* Rage effects */
+    @keyframes rageShake {
+      0% { transform: translate(0,0) rotate(0deg); }
+      20% { transform: translate(-6px, 2px) rotate(-0.5deg); }
+      40% { transform: translate(6px, -2px) rotate(0.6deg); }
+      60% { transform: translate(-5px, -1px) rotate(-0.4deg); }
+      80% { transform: translate(5px, 2px) rotate(0.4deg); }
+      100% { transform: translate(0,0) rotate(0deg); }
+    }
+    .rage-shake { animation: rageShake 220ms ease-in-out 2; }
+
+    .fire-particle{
+      position:absolute;
+      bottom:0;
+      width:8px;
+      height:18px;
+      border-radius:50%;
+      background: radial-gradient(circle at 50% 30%, #fff 0%, #ffae00 40%, #ff4d00 70%, #b30000 100%);
+      animation: rise 800ms ease-out forwards;
+      filter: blur(0.5px);
+    }
+    @keyframes rise{
+      0%{ transform: translateY(0) scale(1); opacity:1; }
+      100%{ transform: translateY(-140px) scale(0.6); opacity:0; }
+    }
+
+    /* Panic mode */
+    @keyframes panicFlash {
+      0%{
+        background:
+          radial-gradient(800px 500px at 20% 10%, rgba(255,255,255,.18), transparent 60%),
+          linear-gradient(180deg, #910000, #5e0000);
+      }
+      50%{
+        background:
+          radial-gradient(800px 500px at 80% 20%, rgba(255,255,255,.08), transparent 60%),
+          linear-gradient(180deg, #ff1e1e, #a30000);
+      }
+      100%{
+        background:
+          radial-gradient(800px 500px at 20% 10%, rgba(255,255,255,.18), transparent 60%),
+          linear-gradient(180deg, #910000, #5e0000);
+      }
+    }
+    body.panic-mode{
+      animation: panicFlash .28s linear infinite;
+    }
+    .panic-overlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 2000;
+      background:
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255,255,255,.08) 0 20px,
+          rgba(255,255,255,.02) 20px 40px
+        ),
+        rgba(110,0,0,.6);
+      backdrop-filter: blur(5px);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+    }
+    .panic-overlay.show{
+      display: flex;
+    }
+    .panic-card{
+      width: min(900px, 96vw);
+      border-radius: 24px;
+      border: 2px solid rgba(255,255,255,.45);
+      background: rgba(30,0,0,.72);
+      box-shadow: 0 25px 70px rgba(0,0,0,.6);
+      padding: 20px;
+    }
+    .panic-title{
+      margin: 0;
+      font-size: clamp(42px, 10vw, 120px);
+      line-height: .95;
+      letter-spacing: 4px;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 30px rgba(255,120,120,.75);
+    }
+    .panic-sub{
+      margin: 8px 0 18px;
+      font-size: clamp(14px, 2.8vw, 26px);
+      color: rgba(255,235,235,.95);
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .panic-big-btn{
+      width: min(760px, 100%);
+      min-height: 150px;
+      border-radius: 26px;
+      border: 2px solid rgba(255,255,255,.72);
+      background: linear-gradient(180deg, #ff4a4a, #d80000);
+      color: #fff;
+      font-size: clamp(24px, 5vw, 52px);
+      font-weight: 900;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 0 40px rgba(255,80,80,.65);
+      animation: sirenPulse .45s ease-in-out infinite alternate;
+    }
+    @keyframes sirenPulse{
+      from{ transform: scale(1); }
+      to{ transform: scale(1.03); }
+    }
+    .panic-hits{
+      margin-top: 14px;
+      font-size: clamp(16px, 2.8vw, 30px);
+      font-weight: 800;
+      color: rgba(255,245,245,.95);
+    }
+
+    @media (max-width: 1200px){
+      .logo{
+        padding: 7px 9px;
+      }
+      .logo b{font-size:14px;}
+      .logo .ver{font-size:11px;}
+      .pill{
+        font-size: 12px;
+        padding: 7px 9px;
+      }
+      .btn{
+        font-size: 12.5px;
+        padding: 9px 10px;
+      }
+      .sys{
+        gap:8px;
+        max-width: calc(100vw - 215px);
+      }
+    }
+
+    @media (max-width: 1000px){
+      .pill:nth-child(2){
+        display:none;
+      }
+      .sys{
+        max-width: calc(100vw - 180px);
+      }
+    }
+
+    @media (max-width: 860px){
+      .content{grid-template-columns: 1fr;}
+      .sidebar{border-right:none; border-bottom:1px solid rgba(255,255,255,.10)}
+      .sys{gap:8px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="logo" title="Offisiell (ish)">
+      <div class="orb"></div>
+      <div>
+        <b>EmblaOS</b>
+        <span class="ver">v3.0 “Barbie Core”</span>
+      </div>
+    </div>
+
+    <div class="sys">
+      <div class="pill">Dopamin: <b id="dopamine">42%</b></div>
+      <div class="pill">Rammeverk: <b>Rosa kaos</b></div>
+
+      <button class="btn primary" id="moodBoost">Mood boost ✨</button>
+      <button class="btn" id="bossMode">Boss Mode</button>
+      <button class="btn" id="hyperfocus">Hyperfokus-modus</button>
+      <button class="btn" id="rageBtn">Utblåsing 💢</button>
+    </div>
+  </div>
+
+  <div class="bossBanner" id="bossBanner">
+    <span>PROFESSIONAL MODE ACTIVATED</span>
+    <span class="tag">ALT UNDER KONTROLL ✅</span>
+  </div>
+
+  <div class="desktop" id="desktop"></div>
+  <div class="toasts" id="toasts"></div>
+
+  <!-- Hyperfokus -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true">
+    <div class="lockcard">
+      <h1>Hyperfokus aktivert <span class="spark">⚡</span></h1>
+      <p>UI er låst for å beskytte den skjøre tråden av konsentrasjon.</p>
+      <div class="bigtime" id="lockTime">03:00</div>
+      <div class="lockrow">
+        <button class="btn primary" id="lockResume">Fortsett hyperfokus</button>
+        <button class="btn" id="lockSnooze">+30 sek (bare litt til)</button>
+        <button class="btn danger" id="lockAbort">Avbryt (jeg velger kaos)</button>
+      </div>
+      <p class="muted" style="margin-top:10px;">Pro-tip: Hyperfokus fungerer best når noen prøver å avbryte deg.</p>
+    </div>
+  </div>
+
+  <!-- B: FORNEBU BADDIE -->
+  <div id="bOverlay" style="
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.85);
+    z-index:999;
+    text-align:center;
+    padding:20px;
+  ">
+    <div style="
+      font-size:clamp(40px, 10vw, 140px);
+      font-weight:900;
+      letter-spacing:4px;
+      background: linear-gradient(90deg,#ff1493,#ff69b4,#ff007f);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation: popB 0.4s ease;
+      text-shadow: 0 0 25px rgba(255,20,147,.25);
+    ">
+      FORNEBU BADDIE
+    </div>
+  </div>
+
+  <!-- Mood boost -->
+  <div id="moodOverlay" style="
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.85);
+    z-index:1000;
+    text-align:center;
+    padding:20px;
+  ">
+    <div id="moodText" style="
+      font-size:clamp(28px, 6vw, 70px);
+      font-weight:900;
+      letter-spacing:2px;
+      background: linear-gradient(90deg,#ff007f,#ff69b4,#ff1493);
+      -webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;
+      animation: moodPop 0.4s ease;
+      text-shadow: 0 0 25px rgba(255,20,147,.25);
+    "></div>
+  </div>
+
+  <!-- Utblåsing / Ventilasjon -->
+  <div id="rageOverlay" style="
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.88);
+    z-index:1200;
+    padding:18px;
+  ">
+    <div style="
+      width:min(760px, 96vw);
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(10,12,26,.78);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
+      padding:16px;
+    ">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+        <div>
+          <div style="font-size:14px; letter-spacing:.5px; font-weight:900; opacity:.9;">VENTILASJON AKTIVERT</div>
+          <div style="color:rgba(255,255,255,.68); font-size:12.5px; margin-top:4px;">
+            Skriv alt du vil. Ingen lagring. Null konsekvenser. (utenom bedre humør)
+          </div>
+        </div>
+
+        <button class="btn danger" id="rageClose" title="Lukk">×</button>
+      </div>
+
+      <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-top:12px;">
+        <textarea id="rageText" placeholder="Skriv her… alt som irriterer deg akkurat nå."
+          style="
+            width:100%;
+            min-height:160px;
+            resize:vertical;
+            border-radius:16px;
+            border:1px solid rgba(255,255,255,.12);
+            background: rgba(0,0,0,.22);
+            color: rgba(255,255,255,.9);
+            padding:12px;
+            outline:none;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+            font-size:13px;
+            line-height:1.45;
+          "></textarea>
+
+        <div id="fireLayer" style="position:relative; height:0; pointer-events:none;"></div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn primary" id="rageScream">SKRIK (trygt)</button>
+          <button class="btn" id="rageRoast">Gi meg en “kommentar”</button>
+          <button class="btn danger" id="rageBurn">Brenn teksten 🔥</button>
+          <button class="btn" id="rageDone">Jeg er ferdig</button>
+        </div>
+
+        <div id="rageLine" style="color:rgba(255,255,255,.75); font-size:12.5px;">
+          Tips: Trykk <b>R</b> for å åpne raskt. ESC lukker.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panic-overlay" id="panicOverlay" role="alert" aria-live="assertive">
+    <div class="panic-card">
+      <h1 class="panic-title">ALARM</h1>
+      <div class="panic-sub">TRYKK DEN STORE KNAPPEN 5 GANGER FOR Å STOPPE</div>
+      <button class="panic-big-btn" id="panicBigBtn">STOPP ALARM (5)</button>
+      <div class="panic-hits" id="panicHits">Gjenstår: 5 trykk</div>
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const clamp = (n,min,max) => Math.max(min, Math.min(max, n));
+    const pick = (arr) => arr[rand(0, arr.length-1)];
+    const TOASTS_ENABLED = false;
+
+    const els = {
+      dopamine: $("dopamine"),
+      desktop: $("desktop"),
+      toasts: $("toasts"),
+
+      moodBoost: $("moodBoost"),
+      bossMode: $("bossMode"),
+      hyperfocus: $("hyperfocus"),
+      rageBtn: $("rageBtn"),
+
+      overlay: $("overlay"),
+      lockTime: $("lockTime"),
+      lockResume: $("lockResume"),
+      lockSnooze: $("lockSnooze"),
+      lockAbort: $("lockAbort"),
+
+      bossBanner: $("bossBanner"),
+
+      bOverlay: $("bOverlay"),
+      moodOverlay: $("moodOverlay"),
+      moodText: $("moodText"),
+
+      rageOverlay: $("rageOverlay"),
+      rageText: $("rageText"),
+      rageClose: $("rageClose"),
+      rageDone: $("rageDone"),
+      rageScream: $("rageScream"),
+      rageBurn: $("rageBurn"),
+      rageRoast: $("rageRoast"),
+      rageLine: $("rageLine"),
+      fireLayer: $("fireLayer"),
+
+      panicOverlay: $("panicOverlay"),
+      panicBigBtn: $("panicBigBtn"),
+      panicHits: $("panicHits"),
+    };
+
+    let dopamine = 42;
+
+    const toastMsgs = [
+      { t: "Systemmelding", b: "Du har 3 tanker som konkurrerer om førsteplass." },
+      { t: "Oppdatering", b: "EmblaOS lastet inn en ny idé. Ingen vet hvorfor." },
+      { t: "Varsel", b: "Du skulle gjøre noe… men det var sikkert ikke viktig. Eller?" },
+      { t: "Achievement", b: "Du åpnet ikke en ny fane på 12 sekunder. Legendarisk." },
+      { t: "Patch notes", b: "v3.0: Mer rosa. Mindre skyldfølelse." },
+      { t: "Kritisk", b: "Skal bare sjekke én ting → 11 ting." },
+      { t: "Motivasjon", b: "Du kan alt. Bare ikke samtidig." },
+    ];
+
+    function setDopamine(delta){
+      dopamine = clamp(dopamine + delta, 0, 100);
+      els.dopamine.textContent = `${dopamine}%`;
+    }
+
+    function toast(title, body, ttl = 3800) {
+      if (!TOASTS_ENABLED) return;
+      const t = document.createElement("div");
+      t.className = "toast";
+
+      const icon = document.createElement("div");
+      icon.className = "ticon";
+      icon.textContent = ["🧠","⚡","🧩","☕","🛠️","📌","✨"][rand(0,6)];
+
+      const main = document.createElement("div");
+      main.className = "tmain";
+      const b = document.createElement("b");
+      b.textContent = title;
+      const p = document.createElement("p");
+      p.textContent = body;
+      main.append(b,p);
+
+      const x = document.createElement("button");
+      x.className = "tx";
+      x.textContent = "×";
+      x.title = "Lukk";
+      x.addEventListener("click", () => t.remove());
+
+      t.append(icon, main, x);
+      els.toasts.appendChild(t);
+
+      setTimeout(() => { if (t.isConnected) t.remove(); }, ttl);
+    }
+
+    // Window state
+    let zTop = 10;
+    let win = null;
+
+    function buildMainWindow() {
+      if (win) win.remove();
+
+      win = document.createElement("div");
+      win.className = "window";
+      win.style.left = "60px";
+      win.style.top = "72px";
+      win.style.zIndex = String(++zTop);
+
+      const titlebar = document.createElement("div");
+      titlebar.className = "titlebar";
+
+      const left = document.createElement("div");
+      left.className = "titleleft";
+
+      const icon = document.createElement("div");
+      icon.className = "appicon";
+
+      const titletext = document.createElement("div");
+      titletext.className = "titletext";
+
+      const t1 = document.createElement("b");
+      t1.textContent = "EmblaOS Kontrollpanel";
+
+      const t2 = document.createElement("span");
+      t2.textContent = "Status: Barbie rosa, men stabil-ish";
+
+      titletext.append(t1,t2);
+      left.append(icon,titletext);
+
+      const btns = document.createElement("div");
+      btns.className = "winbtns";
+
+      const minBtn = document.createElement("div");
+      minBtn.className = "wbtn";
+      minBtn.textContent = "—";
+      minBtn.title = "Minimer";
+      minBtn.addEventListener("click", () => {
+        win.style.display = "none";
+        toast("Minimert", "Vinduet gjemmer seg. Klikk på desktop for å hente det tilbake.");
+        setDopamine(-2);
+      });
+
+      const maxBtn = document.createElement("div");
+      maxBtn.className = "wbtn";
+      maxBtn.textContent = "▢";
+      maxBtn.title = "Maksimer";
+      maxBtn.addEventListener("click", () => {
+        const isMax = win.dataset.max === "1";
+        if (!isMax) {
+          win.dataset.prev = JSON.stringify({
+            left: win.style.left, top: win.style.top,
+            width: win.style.width, height: win.style.height
+          });
+          win.style.left = "12px";
+          win.style.top = "12px";
+          win.style.width = "calc(100% - 24px)";
+          win.style.height = "calc(100% - 24px)";
+          win.dataset.max = "1";
+          toast("Maksimert", "Mer plass. Samme hjerne.");
+        } else {
+          const prev = JSON.parse(win.dataset.prev || "{}");
+          win.style.left = prev.left || "60px";
+          win.style.top = prev.top || "72px";
+          win.style.width = prev.width || "";
+          win.style.height = prev.height || "";
+          win.dataset.max = "0";
+          toast("Normal", "Tilbake til standard størrelse.");
+        }
+        setDopamine(+1);
+      });
+
+      const closeBtn = document.createElement("div");
+      closeBtn.className = "wbtn close";
+      closeBtn.textContent = "×";
+      closeBtn.title = "Lukk";
+      closeBtn.addEventListener("click", () => {
+        win.remove();
+        win = null;
+        toast("Lukket", "Kontrollpanelet er borte. Men du er fortsatt deg.");
+        setDopamine(-4);
+      });
+
+      btns.append(minBtn,maxBtn,closeBtn);
+      titlebar.append(left, btns);
+
+      // Dragging
+      let dragging = false;
+      let startX=0, startY=0, startL=0, startT=0;
+      titlebar.addEventListener("mousedown", (e) => {
+        if (win.dataset.max === "1") return;
+        dragging = true;
+        win.style.zIndex = String(++zTop);
+        startX = e.clientX; startY = e.clientY;
+        startL = parseInt(win.style.left || "60", 10);
+        startT = parseInt(win.style.top || "72", 10);
+      });
+      window.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const nl = Math.max(0, Math.min(window.innerWidth - 120, startL + dx));
+        const nt = Math.max(0, Math.min(window.innerHeight - 120, startT + dy));
+        win.style.left = nl + "px";
+        win.style.top = nt + "px";
+      });
+      window.addEventListener("mouseup", () => dragging = false);
+
+      const content = document.createElement("div");
+      content.className = "content";
+
+      const sidebar = document.createElement("div");
+      sidebar.className = "sidebar";
+      sidebar.innerHTML = `
+        <div class="sidecard">
+          <h3>Systemstatus</h3>
+          <p>
+            <span class="mono">CPU</span> Baddie-energy: <b>Høy</b><br/>
+            <span class="mono">RAM</span> Tålmodighet: <b>Varierer</b><br/>
+            <span class="mono">IO</span> “Skal bare”: <b>Alltid aktiv</b>
+          </p>
+        </div>
+
+        <div class="sidecard">
+          <h3>Hurtigknapper</h3>
+          <p class="muted" style="margin:0 0 10px;">B = FORNEBU BADDIE · P = Boss Mode · R = Utblåsing</p>
+          <div class="sideactions">
+            <button class="btn" id="randomToast">Send systemmelding</button>
+            <button class="btn" id="progressTroll">Start “oppdatering”</button>
+            <button class="btn danger" id="panic">PANIKK-KNAPP</button>
+          </div>
+        </div>
+      `;
+
+      const main = document.createElement("div");
+      main.className = "main";
+      main.innerHTML = `
+        <div class="grid">
+          <div class="card">
+            <h2>Mini-spill: Reaksjonstest</h2>
+            <div class="muted">Trykk start, vent, og klikk når det blir “KLIKK NÅ!”.</div>
+            <div class="gameWrap">
+              <button class="gameBtn" id="gameBtn">Start</button>
+              <div class="gameStats">
+                <div class="muted">Siste:</div>
+                <div class="big" id="lastMs">—</div>
+                <div class="muted">Beste:</div>
+                <div class="big" id="bestMs">—</div>
+              </div>
+              <button class="btn danger" id="resetBest">Nullstill beste</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Mini-spill: Klikk-jakt</h2>
+            <div class="muted">Treff så mange rosa mål du klarer på 10 sekunder.</div>
+            <div class="gameWrap">
+              <button class="btn primary" id="tapStart">Start 10s runde</button>
+              <div class="gameStats">
+                <div class="muted">Poeng:</div>
+                <div class="big" id="tapScore">0</div>
+                <div class="muted">Beste:</div>
+                <div class="big" id="tapBest">0</div>
+              </div>
+              <div class="tapArea" id="tapArea">
+                <div class="muted" id="tapHint">Trykk start og jag boblene.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Mini-spill: Talljeger</h2>
+            <div class="muted">Gjett tallet mellom 1 og 30 på færrest forsøk.</div>
+            <div class="gameWrap">
+              <div class="guessRow">
+                <input class="guessInput" id="guessInput" type="number" min="1" max="30" placeholder="1-30" />
+                <button class="btn" id="guessBtn">Gjett</button>
+                <button class="btn danger" id="guessReset">Nytt tall</button>
+              </div>
+              <div class="gameStats">
+                <div class="muted">Forsøk:</div>
+                <div class="big" id="guessAttempts">0</div>
+                <div class="muted">Best:</div>
+                <div class="big" id="guessBest">—</div>
+              </div>
+              <div class="muted" id="guessHint">Klar for første gjetning.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Systemoppdatering</h2>
+            <div class="muted">Installerer: <span class="mono" id="updateName">KonsentrasjonDriver v0.3</span></div>
+            <div class="progress"><div class="bar" id="bar"></div></div>
+            <div class="row" style="margin-top:8px;">
+              <div class="muted">Status</div>
+              <div class="mono" id="updateStatus">Klar (men litt skeptisk)</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      content.append(sidebar, main);
+      win.append(titlebar, content);
+      els.desktop.appendChild(win);
+
+      // Sidebar hooks
+      const toastBtn = win.querySelector("#randomToast");
+      const progBtn  = win.querySelector("#progressTroll");
+      const panicBtn = win.querySelector("#panic");
+
+      if (toastBtn) toastBtn.addEventListener("click", () => {
+        const m = pick(toastMsgs);
+        toast(m.t, m.b);
+        setDopamine(+1);
+      });
+
+      if (progBtn) progBtn.addEventListener("click", () => {
+        startFakeUpdate();
+        setDopamine(+2);
+      });
+
+      if (panicBtn) panicBtn.addEventListener("click", () => panicMode());
+
+      initReactionGame(win);
+      initTapRushGame(win);
+      initNumberGuessGame(win);
+    }
+
+    // --- Mini game: Reaction test ---
+    const BEST_KEY = "emblaos_best_ms_v3";
+    const TAP_BEST_KEY = "emblaos_tap_best_v1";
+    const GUESS_BEST_KEY = "emblaos_guess_best_v1";
+    let gameState = "idle"; // idle | waiting | go
+    let goAt = 0;
+    let waitTimer = null;
+
+    function initReactionGame(scope){
+      const btn = scope.querySelector("#gameBtn");
+      const lastEl = scope.querySelector("#lastMs");
+      const bestEl = scope.querySelector("#bestMs");
+      const resetBest = scope.querySelector("#resetBest");
+      if (!btn || !lastEl || !bestEl || !resetBest) return;
+
+      const best = Number(localStorage.getItem(BEST_KEY));
+      bestEl.textContent = Number.isFinite(best) && best > 0 ? `${best} ms` : "—";
+
+      function setBtn(text, cls){
+        btn.textContent = text;
+        btn.classList.remove("waiting","go","tooSoon");
+        if (cls) btn.classList.add(cls);
+      }
+
+      function setBest(ms){
+        const cur = Number(localStorage.getItem(BEST_KEY));
+        if (!Number.isFinite(cur) || cur <= 0 || ms < cur){
+          localStorage.setItem(BEST_KEY, String(ms));
+          bestEl.textContent = `${ms} ms`;
+          toast("Ny rekord!", `${ms} ms. Reflekser: godkjent ✅`);
+          setDopamine(+10);
+        }
+      }
+
+      function startRound(){
+        if (waitTimer) clearTimeout(waitTimer);
+        gameState = "waiting";
+        setBtn("Vent…", "waiting");
+        const delay = rand(1000, 4000);
+        waitTimer = setTimeout(() => {
+          gameState = "go";
+          goAt = performance.now();
+          setBtn("KLIKK NÅ!", "go");
+        }, delay);
+      }
+
+      btn.addEventListener("click", () => {
+        if (gameState === "idle") {
+          setDopamine(+2);
+          startRound();
+          return;
+        }
+        if (gameState === "waiting") {
+          if (waitTimer) clearTimeout(waitTimer);
+          waitTimer = null;
+          gameState = "idle";
+          setBtn("For tidlig 😭 Start på nytt", "tooSoon");
+          lastEl.textContent = "—";
+          toast("For tidlig!", "Nerver i beta. Prøv igjen.");
+          setDopamine(-6);
+          setTimeout(() => setBtn("Start", ""), 900);
+          return;
+        }
+        if (gameState === "go") {
+          const ms = Math.round(performance.now() - goAt);
+          gameState = "idle";
+          setBtn("Start", "");
+          lastEl.textContent = `${ms} ms`;
+          toast("Reaksjonstid", `${ms} ms`);
+          setDopamine(+4);
+
+          setBest(ms);
+
+          if (ms < 220) toast("⚡", "Du har esport-håndledd.");
+          else if (ms < 300) toast("Solid", "Veldig menneskelig bra.");
+          else if (ms < 450) toast("Helt ok", "Hjernen lastet en sidequest først.");
+          else toast("…", "EmblaOS sjekket én ting først.");
+        }
+      });
+
+      resetBest.addEventListener("click", () => {
+        localStorage.removeItem(BEST_KEY);
+        bestEl.textContent = "—";
+        toast("Nullstilt", "Beste tid slettet. Ingen bevis. Nytt liv.");
+        setDopamine(-2);
+      });
+
+      setBtn("Start", "");
+    }
+
+    // --- Mini game: Klikk-jakt ---
+    function initTapRushGame(scope){
+      const startBtn = scope.querySelector("#tapStart");
+      const scoreEl = scope.querySelector("#tapScore");
+      const bestEl = scope.querySelector("#tapBest");
+      const area = scope.querySelector("#tapArea");
+      const hint = scope.querySelector("#tapHint");
+      if (!startBtn || !scoreEl || !bestEl || !area || !hint) return;
+
+      let active = false;
+      let score = 0;
+      let tickTimer = null;
+      let endTimer = null;
+      let dot = null;
+      let left = 10;
+      const best = Number(localStorage.getItem(TAP_BEST_KEY));
+      bestEl.textContent = Number.isFinite(best) && best > 0 ? String(best) : "0";
+
+      function clearDot(){
+        if (dot && dot.isConnected) dot.remove();
+        dot = null;
+      }
+
+      function spawnDot(){
+        clearDot();
+        if (!active || !area.isConnected) return;
+
+        dot = document.createElement("button");
+        dot.className = "tapDot";
+        dot.textContent = "★";
+
+        const w = area.clientWidth;
+        const h = area.clientHeight;
+        const size = rand(46, 64);
+        dot.style.width = `${size}px`;
+        dot.style.height = `${size}px`;
+        dot.style.fontSize = `${Math.max(18, Math.round(size * 0.36))}px`;
+
+        const x = rand(6, Math.max(8, w - size - 6));
+        const y = rand(6, Math.max(8, h - size - 6));
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+
+        dot.addEventListener("click", () => {
+          if (!active) return;
+          score += 1;
+          scoreEl.textContent = String(score);
+          setDopamine(+1);
+          spawnDot();
+        });
+
+        area.appendChild(dot);
+      }
+
+      function endRound(){
+        active = false;
+        if (tickTimer) clearInterval(tickTimer);
+        if (endTimer) clearTimeout(endTimer);
+        tickTimer = null;
+        endTimer = null;
+        clearDot();
+
+        startBtn.textContent = "Start 10s runde";
+        hint.textContent = `Runde ferdig! Du fikk ${score} poeng.`;
+
+        const curBest = Number(localStorage.getItem(TAP_BEST_KEY));
+        if (!Number.isFinite(curBest) || score > curBest) {
+          localStorage.setItem(TAP_BEST_KEY, String(score));
+          bestEl.textContent = String(score);
+          toast("Ny Klikk-jakt rekord!", `${score} poeng. Du er en maskin.`);
+          setDopamine(+8);
+        } else {
+          toast("Klikk-jakt ferdig", `${score} poeng på 10 sekunder.`);
+          setDopamine(+3);
+        }
+      }
+
+      startBtn.addEventListener("click", () => {
+        if (active) return;
+        active = true;
+        score = 0;
+        left = 10;
+        scoreEl.textContent = "0";
+        hint.textContent = "Treff så mange stjerner du klarer!";
+        startBtn.textContent = `Tid igjen: ${left}s`;
+        spawnDot();
+
+        tickTimer = setInterval(() => {
+          left -= 1;
+          if (!active || !startBtn.isConnected) {
+            if (tickTimer) clearInterval(tickTimer);
+            tickTimer = null;
+            return;
+          }
+          startBtn.textContent = left > 0 ? `Tid igjen: ${left}s` : "Tid ute!";
+        }, 1000);
+
+        endTimer = setTimeout(endRound, 10000);
+      });
+    }
+
+    // --- Mini game: Talljeger ---
+    function initNumberGuessGame(scope){
+      const input = scope.querySelector("#guessInput");
+      const guessBtn = scope.querySelector("#guessBtn");
+      const resetBtn = scope.querySelector("#guessReset");
+      const attemptsEl = scope.querySelector("#guessAttempts");
+      const bestEl = scope.querySelector("#guessBest");
+      const hint = scope.querySelector("#guessHint");
+      if (!input || !guessBtn || !resetBtn || !attemptsEl || !bestEl || !hint) return;
+
+      let target = rand(1, 30);
+      let attempts = 0;
+
+      const best = Number(localStorage.getItem(GUESS_BEST_KEY));
+      bestEl.textContent = Number.isFinite(best) && best > 0 ? String(best) : "—";
+
+      function resetRound(message = "Nytt tall valgt. Kjør!"){
+        target = rand(1, 30);
+        attempts = 0;
+        attemptsEl.textContent = "0";
+        hint.textContent = message;
+        input.value = "";
+        input.focus();
+      }
+
+      function submitGuess(){
+        const n = Number(input.value);
+        if (!Number.isInteger(n) || n < 1 || n > 30) {
+          hint.textContent = "Skriv et heltall mellom 1 og 30.";
+          toast("Talljeger", "Ugyldig tall. Prøv igjen.");
+          return;
+        }
+
+        attempts += 1;
+        attemptsEl.textContent = String(attempts);
+
+        if (n < target) {
+          hint.textContent = `${n} er for lavt. Opp opp opp.`;
+          setDopamine(-1);
+        } else if (n > target) {
+          hint.textContent = `${n} er for høyt. Ned igjen.`;
+          setDopamine(-1);
+        } else {
+          hint.textContent = `Riktig! Tallet var ${target}.`;
+          toast("Talljeger", `Treff på ${attempts} forsøk.`);
+          setDopamine(+7);
+
+          const curBest = Number(localStorage.getItem(GUESS_BEST_KEY));
+          if (!Number.isFinite(curBest) || attempts < curBest) {
+            localStorage.setItem(GUESS_BEST_KEY, String(attempts));
+            bestEl.textContent = String(attempts);
+            toast("Ny rekord!", `${attempts} forsøk er ny best i Talljeger.`);
+            setDopamine(+6);
+          }
+
+          setTimeout(() => resetRound("Nytt tall valgt automatisk."), 500);
+          return;
+        }
+
+        input.value = "";
+        input.focus();
+      }
+
+      guessBtn.addEventListener("click", submitGuess);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitGuess();
+      });
+      resetBtn.addEventListener("click", () => {
+        resetRound("Runden ble nullstilt.");
+        toast("Talljeger", "Nytt tall generert.");
+        setDopamine(-2);
+      });
+    }
+
+    // Fake update progress
+    let updateTimer = null;
+    function startFakeUpdate() {
+      const bar = document.getElementById("bar");
+      const status = document.getElementById("updateStatus");
+      const name = document.getElementById("updateName");
+      if (!bar || !status || !name) return;
+
+      if (updateTimer) clearInterval(updateTimer);
+
+      name.textContent = pick([
+        "KonsentrasjonDriver v0.3",
+        "PrioriteringsModul v1.1",
+        "HuskelappService v2.0",
+        "MotivasjonsPatch (eksperimentell)"
+      ]);
+
+      let p = 0;
+      status.textContent = "Starter… (denne gangen mener vi det)";
+      bar.style.width = "0%";
+
+      updateTimer = setInterval(() => {
+        const roll = rand(0, 100);
+        if (roll < 10) p = Math.max(0, p - rand(1, 7));
+        else if (roll < 70) p = Math.min(97, p + rand(1, 6));
+        else p = Math.min(99, p + rand(8, 18));
+
+        bar.style.width = p + "%";
+
+        if (p < 10) status.textContent = "Lasters… (ser på en video først)";
+        else if (p < 35) status.textContent = "Installerer… (fant en bedre måte)";
+        else if (p < 60) status.textContent = "Konfigurerer… (googler én liten ting)";
+        else if (p < 85) status.textContent = "Nesten ferdig… (men får en idé)";
+        else if (p < 98) status.textContent = "98%… (klassiker)";
+        else status.textContent = "99%… (for alltid)";
+
+        if (p >= 99 && rand(0, 100) > 70) {
+          clearInterval(updateTimer);
+          updateTimer = null;
+          bar.style.width = "100%";
+          status.textContent = "Fullført! (sannhet ikke garantert)";
+          toast("Oppdatering fullført", "Alt er bedre nå. I teorien.");
+          setDopamine(+6);
+          setTimeout(() => {
+            bar.style.width = "12%";
+            status.textContent = "Oops. Ruller tilbake (fordi… hvorfor ikke).";
+          }, 900);
+        }
+      }, 260);
+
+      toast("Oppdatering startet", "Progress baren har ingen juridisk binding til virkeligheten.");
+    }
+
+    // “Skal bare sjekke én ting” = kaos-toasts
+    function oneThing() {
+      const howMany = rand(3, 7);
+      toast("Trigger", `Du trykket “én ting”. Resultat: ${howMany} distraksjoner.`);
+      setDopamine(+8);
+
+      for (let i = 0; i < howMany; i++) {
+        setTimeout(() => {
+          if (rand(0, 10) > 7) {
+            const m = pick(toastMsgs);
+            toast(m.t, m.b);
+          } else {
+            toast("Skal bare", "Dette tar 2 minutter. (løgn)");
+          }
+        }, i * rand(110, 180));
+      }
+    }
+
+    // Boss Mode
+    let bossTimer = null;
+    function setBossMode(on){
+      document.body.classList.toggle("boss-mode", on);
+
+      if (on){
+        toast("Boss Mode", "Du ser 300% mer seriøs ut nå.");
+        setDopamine(-2);
+        if (bossTimer) clearTimeout(bossTimer);
+        bossTimer = setTimeout(() => {
+          setBossMode(false);
+          toast("Tilbake", "Masken falt. Kaoset lever.");
+          setDopamine(+3);
+        }, 8000);
+      } else {
+        if (bossTimer) clearTimeout(bossTimer);
+        bossTimer = null;
+      }
+    }
+
+    // Mood Boost
+    const moodLines = [
+      "Du er pen",
+      "Du er rå",
+      "Verdens mest morsomste jente",
+      "Ingen er bedre enn deg",
+      "Alle er glad i deg",
+      "Du vil alltid være den peneste i VCSO."
+    ];
+    function showMood(){
+      const randomLine = moodLines[Math.floor(Math.random() * moodLines.length)];
+      els.moodText.textContent = randomLine;
+      els.moodOverlay.style.display = "flex";
+      setDopamine(+12);
+      setTimeout(() => { els.moodOverlay.style.display = "none"; }, 2200);
+    }
+
+    // B overlay
+    function showBaddie(){
+      els.bOverlay.style.display = "flex";
+      setDopamine(+5);
+      setTimeout(() => { els.bOverlay.style.display = "none"; }, 1800);
+    }
+
+    // Hyperfokus overlay
+    let lockSeconds = 180;
+    let lockTimer = null;
+
+    function showOverlay() {
+      els.overlay.classList.add("show");
+      updateLockTime();
+    }
+    function hideOverlay() {
+      els.overlay.classList.remove("show");
+    }
+    function updateLockTime(){
+      const m = Math.floor(lockSeconds / 60);
+      const s = lockSeconds % 60;
+      els.lockTime.textContent = String(m).padStart(2,"0") + ":" + String(s).padStart(2,"0");
+    }
+
+    function startHyperfocus() {
+      lockSeconds = 180;
+      showOverlay();
+      toast("Hyperfokus", "UI låst for å beskytte tråden.");
+      setDopamine(+5);
+
+      if (lockTimer) clearInterval(lockTimer);
+      lockTimer = setInterval(() => {
+        lockSeconds -= 1;
+        if (lockSeconds <= 0) {
+          lockSeconds = 0;
+          updateLockTime();
+          clearInterval(lockTimer);
+          lockTimer = null;
+          hideOverlay();
+          toast("Hyperfokus ferdig", "Tilbake til… resten av internett.");
+          setDopamine(+8);
+          return;
+        }
+        updateLockTime();
+      }, 1000);
+    }
+
+    function forgetAll() {
+      toast("Reset", "Glemt hva vi gjorde. Starter på nytt (mentalt).");
+      setDopamine(-10);
+      buildMainWindow();
+      startFakeUpdate();
+    }
+
+    const panicState = {
+      active: false,
+      remainingPresses: 5,
+      alarmTimer: null,
+      beepTimer: null,
+      beepFlip: false,
+      audioCtx: null,
+    };
+
+    function panicBeep(freq = 820, duration = 0.09){
+      try{
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return;
+        if (!panicState.audioCtx) panicState.audioCtx = new AC();
+        if (panicState.audioCtx.state === "suspended") panicState.audioCtx.resume();
+
+        const osc = panicState.audioCtx.createOscillator();
+        const gain = panicState.audioCtx.createGain();
+        osc.type = "square";
+        osc.frequency.value = freq;
+        gain.gain.value = 0.0001;
+        osc.connect(gain);
+        gain.connect(panicState.audioCtx.destination);
+
+        const now = panicState.audioCtx.currentTime;
+        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      } catch (_) {}
+    }
+
+    function updatePanicUI(){
+      if (!els.panicBigBtn || !els.panicHits) return;
+      const r = panicState.remainingPresses;
+      els.panicBigBtn.textContent = `STOPP ALARM (${r})`;
+      els.panicHits.textContent = `Gjenstår: ${r} trykk`;
+    }
+
+    function stopPanicMode(){
+      panicState.active = false;
+      document.body.classList.remove("panic-mode");
+      els.panicOverlay.classList.remove("show");
+      if (panicState.alarmTimer) clearInterval(panicState.alarmTimer);
+      if (panicState.beepTimer) clearInterval(panicState.beepTimer);
+      panicState.alarmTimer = null;
+      panicState.beepTimer = null;
+      panicState.beepFlip = false;
+      toast("Alarm stoppet", "Systemet er tilbake til normal kaos.");
+      setDopamine(+4);
+    }
+
+    function panicMode() {
+      if (panicState.active){
+        toast("PANIKK", "ALARM KJØRER ALLEREDE.");
+        return;
+      }
+
+      panicState.active = true;
+      panicState.remainingPresses = 5;
+      document.body.classList.add("panic-mode");
+      els.panicOverlay.classList.add("show");
+      updatePanicUI();
+
+      toast("PANIKK-KNAPP", "ALARM AKTIVERT.");
+      setDopamine(-12);
+
+      panicBeep(920, 0.1);
+      panicState.beepTimer = setInterval(() => {
+        panicState.beepFlip = !panicState.beepFlip;
+        panicBeep(panicState.beepFlip ? 980 : 680, 0.08);
+      }, 220);
+
+      panicState.alarmTimer = setInterval(() => {
+        toast("🚨 ALARM 🚨", pick([
+          "KRITISK NIVÅ: PANIKK.",
+          "AKUTT MODUS AKTIVT.",
+          "SYSTEMET SKRIKER.",
+          "TRYKK KNAPPEN 5 GANGER."
+        ]), 1200);
+      }, 750);
+    }
+
+    // Utblåsing / Ventilasjon
+    const roastLines = [
+      "EmblaOS bekrefter: irritasjon er en legitim ressurs.",
+      "Du er ikke sur. Du er bare ekstremt presis.",
+      "Systemet registrerer: 1% tålmodighet igjen.",
+      "Dette er ikke drama. Dette er feilsøking av mennesker.",
+      "Du har rett. Resten av verden må bare oppdatere seg.",
+      "Rolig… (nei) – du er et ikon, ikke en kundeservicebot."
+    ];
+
+    function openRage(){
+      els.rageOverlay.style.display = "flex";
+      setDopamine(+3);
+      toast("Utblåsing", "Ventilasjon aktivert. Kjør på.");
+      setTimeout(() => els.rageText?.focus(), 50);
+    }
+    function closeRage(){
+      els.rageOverlay.style.display = "none";
+      toast("Ok", "Ventilasjon avsluttet. Du er tilbake i kontroll-ish.");
+      setDopamine(+2);
+    }
+
+    function burnTextWithFlames(){
+      if (!els.rageText.value.trim()) {
+        toast("Brenn", "Ingen tekst å brenne. (Bra jobba?)");
+        return;
+      }
+
+      const rect = els.rageText.getBoundingClientRect();
+
+      for (let i = 0; i < 40; i++) {
+        const flame = document.createElement("div");
+        flame.className = "fire-particle";
+        flame.style.left = (Math.random() * rect.width) + "px";
+        flame.style.animationDuration = (600 + Math.random() * 400) + "ms";
+        els.fireLayer.appendChild(flame);
+        setTimeout(() => flame.remove(), 900);
+      }
+
+      document.body.classList.remove("rage-shake");
+      void document.body.offsetWidth;
+      document.body.classList.add("rage-shake");
+
+      setTimeout(() => {
+        els.rageText.value = "";
+        toast("🔥 FULLSTENDIG FORBRENNT", "Sinnet ble kremert.");
+        setDopamine(+8);
+      }, 400);
+    }
+
+    // Desktop click: bring window back if minimized
+    els.desktop.addEventListener("click", () => {
+      if (win && win.style.display === "none") {
+        win.style.display = "";
+        win.style.zIndex = String(++zTop);
+        toast("Funnet!", "Vinduet kom tilbake fra den mentale skuffen.");
+        setDopamine(+1);
+      }
+    });
+
+    // Top buttons
+    els.moodBoost.addEventListener("click", showMood);
+    els.bossMode.addEventListener("click", () => setBossMode(!document.body.classList.contains("boss-mode")));
+    els.hyperfocus.addEventListener("click", startHyperfocus);
+    els.rageBtn.addEventListener("click", openRage);
+
+    // Overlay buttons
+    els.lockResume.addEventListener("click", () => {
+      toast("Hyperfokus", "Fortsetter. Ikke forstyrr. Ikke pust for høyt.");
+      setDopamine(+1);
+    });
+    els.lockSnooze.addEventListener("click", () => {
+      lockSeconds += 30;
+      updateLockTime();
+      toast("Bare litt til", "+30 sek. Klassiker.");
+      setDopamine(+2);
+    });
+    els.lockAbort.addEventListener("click", () => {
+      if (lockTimer) clearInterval(lockTimer);
+      lockTimer = null;
+      hideOverlay();
+      toast("Avbrutt", "Du valgte kaos. EmblaOS respekterer det.");
+      setDopamine(-8);
+    });
+
+    // Rage overlay buttons
+    els.rageClose.addEventListener("click", closeRage);
+    els.rageDone.addEventListener("click", closeRage);
+    els.rageScream.addEventListener("click", () => {
+      document.body.classList.remove("rage-shake");
+      void document.body.offsetWidth;
+      document.body.classList.add("rage-shake");
+      toast("AAAAA", "Skrik registrert. Stress dumpet.");
+      setDopamine(+6);
+    });
+    els.rageRoast.addEventListener("click", () => {
+      const line = roastLines[Math.floor(Math.random() * roastLines.length)];
+      els.rageLine.textContent = line;
+      toast("EmblaOS", line, 2800);
+      setDopamine(+2);
+    });
+    els.rageBurn.addEventListener("click", burnTextWithFlames);
+    els.panicBigBtn.addEventListener("click", () => {
+      if (!panicState.active) return;
+      panicState.remainingPresses -= 1;
+      panicBeep(540, 0.06);
+      if (panicState.remainingPresses <= 0){
+        stopPanicMode();
+        return;
+      }
+      updatePanicUI();
+    });
+
+    // Keyboard shortcuts (B / P / R + ESC)
+    window.addEventListener("keydown", (e) => {
+      const tag = (document.activeElement?.tagName || "").toLowerCase();
+      const typing = tag === "input" || tag === "textarea";
+
+      if (e.key === "Escape") {
+        if (els.rageOverlay.style.display === "flex") closeRage();
+        return;
+      }
+
+      if (typing) return;
+
+      const k = e.key.toLowerCase();
+      if (k === "b") showBaddie();
+      if (k === "p") setBossMode(!document.body.classList.contains("boss-mode"));
+      if (k === "r") openRage();
+    });
+
+    function init() {
+      buildMainWindow();
+      setTimeout(() => toast("Velkommen", "EmblaOS er lastet. Alt er under kontroll (nei)."), 450);
+      setTimeout(() => startFakeUpdate(), 1100);
+
+      if (TOASTS_ENABLED) {
+        setInterval(() => {
+          setDopamine(-1);
+          if (Math.random() < 0.30) {
+            const m = pick(toastMsgs);
+            toast(m.t, m.b);
+          }
+        }, 6500);
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
