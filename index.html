@@ -609,6 +609,71 @@
       font-weight: 800;
       color: rgba(255,245,245,.95);
     }
+    .laugh-box{
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      z-index: 1400;
+      width: min(420px, calc(100vw - 28px));
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(10,12,26,.82);
+      box-shadow: 0 20px 50px rgba(0,0,0,.45);
+      backdrop-filter: blur(8px);
+      padding: 12px;
+      display: none;
+    }
+    .laugh-box.show{display:block;}
+    .laugh-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:8px;
+      font-weight:900;
+      letter-spacing:.4px;
+      font-size:13px;
+    }
+    .laugh-text{
+      margin:0;
+      color: rgba(255,235,245,.95);
+      line-height:1.42;
+      font-size: 13.5px;
+    }
+    .laugh-close{
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.88);
+      cursor: pointer;
+      font-weight: 900;
+    }
+    .confetti-btn{
+      position: fixed;
+      right: 14px;
+      bottom: 14px;
+      z-index: 1450;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.2);
+      background: linear-gradient(135deg, #ff1493, #ff69b4);
+      color: #fff;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 16px 40px rgba(255,20,147,.4);
+    }
+    .confetti-btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 20px 45px rgba(255,20,147,.5);
+    }
+    .confetti-layer{
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1500;
+    }
 
     @media (max-width: 1200px){
       .logo{
@@ -662,7 +727,7 @@
       <div class="pill">Rammeverk: <b>Rosa kaos</b></div>
 
       <button class="btn primary" id="moodBoost">Mood boost ✨</button>
-      <button class="btn" id="bossMode">Boss Mode</button>
+      <button class="btn" id="laughBtn">Le-knapp 😂</button>
       <button class="btn" id="hyperfocus">Hyperfokus-modus</button>
       <button class="btn" id="rageBtn">Utblåsing 💢</button>
     </div>
@@ -813,6 +878,16 @@
     </div>
   </div>
 
+  <div class="laugh-box" id="laughBox">
+    <div class="laugh-head">
+      <span>Dagens dårlige vits</span>
+      <button class="laugh-close" id="laughClose" title="Lukk">×</button>
+    </div>
+    <p class="laugh-text" id="laughText"></p>
+  </div>
+  <button class="confetti-btn" id="confettiBtn">Confetti 🎉</button>
+  <canvas class="confetti-layer" id="confettiLayer"></canvas>
+
   <script>
     const $ = (id) => document.getElementById(id);
     const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -826,7 +901,7 @@
       toasts: $("toasts"),
 
       moodBoost: $("moodBoost"),
-      bossMode: $("bossMode"),
+      laughBtn: $("laughBtn"),
       hyperfocus: $("hyperfocus"),
       rageBtn: $("rageBtn"),
 
@@ -855,6 +930,13 @@
       panicOverlay: $("panicOverlay"),
       panicBigBtn: $("panicBigBtn"),
       panicHits: $("panicHits"),
+
+      laughBox: $("laughBox"),
+      laughText: $("laughText"),
+      laughClose: $("laughClose"),
+
+      confettiBtn: $("confettiBtn"),
+      confettiLayer: $("confettiLayer"),
     };
 
     let dopamine = 42;
@@ -1495,10 +1577,57 @@
     const moodLines = [
       "Du er pen",
       "Du er rå",
-      "Verdens mest morsomste jente",
+      "Verdens morsomste jente",
       "Ingen er bedre enn deg",
       "Alle er glad i deg",
-      "Du vil alltid være den peneste i VCSO."
+      "Du vil alltid være den peneste i VCSO.",
+    "Du er enestående.",
+    "Du er flink i jobben",
+    "I dag er du en bad bitch.",
+    "Du er en bad bitch.",
+    
+
+
+
+
+
+    ];
+    const laughLines = [
+      "Kundesenteret ba meg holde linjen. Nå bor jeg her.",
+      "Jeg ble satt over til riktig avdeling. Den avdelingen satte meg tilbake.",
+      "De sa: 'Saken er eskalert.' Nå står den på toppen av Mount Everest.",
+      "Kundeservice sa de skulle ringe tilbake. Jeg har blitt eldre siden da.",
+      "Jeg trykket 1 for norsk, 2 for support, 3 for tålmodighet.",
+      "Saksnummeret mitt er så langt at det har eget postnummer.",
+      "Robotstemmen sa 'du er viktig for oss'. Jeg tror den sa det til alle.",
+      "Kundesenteret ba om kvittering. Jeg sendte bilde av følelsene mine.",
+      "De sa ventetid var 2 minutter. Det var i fjor.",
+      "Jeg forklarte problemet fem ganger. Nå kjenner vi hverandre godt.",
+      "Saken min ble løst! Ved at de åpnet en ny sak.",
+      "Kundeservice sa 'har du prøvd å starte på nytt?' Ja, livet mitt.",
+      "Jeg fikk beskjed om å være kortfattet. Nå er saken min en trilogi.",
+      "De sa 'vi beklager ulempen'. Ulempen sa takk.",
+      "Kømusikken er så kjent nå at jeg vurderer konsert.",
+      "Jeg fikk en chatbot. Den kalte meg 'venn' før den ga opp.",
+      "Support sa de skulle følge opp saken. Vi følger hverandre på avstand.",
+      "Kundesenteret sa 'ett øyeblikk'. Jeg rakk å ta utdanning.",
+      "Jeg ble satt i kø nummer 1. Jeg mistenker at jeg var alene.",
+      "De sa 'takk for tålmodigheten'. Jeg hadde ikke noe valg.",
+      "Jeg fikk tre svar på én mail. Ingen av dem til mitt spørsmål.",
+      "Saken ble videresendt så mange ganger at den fikk jetlag.",
+      "Kundeservice ba meg beskrive feilen. Jeg sendte selfie.",
+      "Jeg fikk ny saksbehandler. Han startet med 'kan du forklare fra starten?'",
+      "De sa problemet var kjent. Tydeligvis ikke av løsningsavdelingen.",
+      "Køen gikk raskt. Bare 47 personer foran meg og god medvind.",
+      "Support sa 'ikke lukk vinduet'. Nå er det vinter inne.",
+      "De lovet prioritetssak. Prioriteten var å vente penere.",
+      "Jeg fikk standardsvar. Nå kan jeg det utenat og med innlevelse.",
+      "Kundesenteret ba meg holde meg rolig. Jeg holdt meg i bordkanten.",
+      "De sendte meg FAQ. Jeg sendte tilbake FML.",
+      "Saksnummeret mitt ble ugyldig. Jeg trodde vi hadde noe ekte.",
+      "Kundeservice skrev 'vi tar dette internt'. Jeg vurderte å flytte inn.",
+      "Jeg fikk svar klokken 03:14. De lever tydeligvis i en annen tidslinje.",
+      "De sa feilen var midlertidig. Vi feiret 6-månedersdag i går."
     ];
     function showMood(){
       const randomLine = moodLines[Math.floor(Math.random() * moodLines.length)];
@@ -1506,6 +1635,96 @@
       els.moodOverlay.style.display = "flex";
       setDopamine(+12);
       setTimeout(() => { els.moodOverlay.style.display = "none"; }, 2200);
+    }
+
+    function showLaugh(){
+      const line = laughLines[Math.floor(Math.random() * laughLines.length)];
+      els.laughText.textContent = line;
+      els.laughBox.classList.add("show");
+      setDopamine(+4);
+    }
+
+    const confettiState = {
+      ctx: null,
+      particles: [],
+      raf: null,
+      animating: false,
+    };
+
+    function launchConfetti(amount = 260){
+      const canvas = els.confettiLayer;
+      if (!canvas) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+      const targetW = Math.floor(w * dpr);
+      const targetH = Math.floor(h * dpr);
+
+      if (canvas.width !== targetW || canvas.height !== targetH) {
+        canvas.width = targetW;
+        canvas.height = targetH;
+      }
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+
+      if (!confettiState.ctx) confettiState.ctx = canvas.getContext("2d");
+      const ctx = confettiState.ctx;
+      if (!ctx) return;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const colors = ["#ff1493", "#ff69b4", "#ffd166", "#6ee7ff", "#ffffff", "#9bff6e"];
+      for (let i = 0; i < amount; i++) {
+        const fromLeft = i % 2 === 0;
+        confettiState.particles.push({
+          x: fromLeft ? rand(0, Math.floor(w * 0.22)) : rand(Math.floor(w * 0.78), w),
+          y: h + rand(8, 36),
+          vx: fromLeft ? rand(2, 9) / 2 : -rand(2, 9) / 2,
+          vy: -rand(12, 22) / 2,
+          g: rand(14, 24) / 100,
+          size: rand(6, 13),
+          rot: rand(0, 360),
+          vr: rand(-18, 18) / 10,
+          color: colors[rand(0, colors.length - 1)],
+          alpha: 1,
+        });
+      }
+
+      if (confettiState.animating) return;
+      confettiState.animating = true;
+
+      function frame(){
+        ctx.clearRect(0, 0, w, h);
+        for (const p of confettiState.particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.g;
+          p.rot += p.vr;
+          p.alpha *= 0.992;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate((p.rot * Math.PI) / 180);
+          ctx.globalAlpha = Math.max(0, p.alpha);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.62);
+          ctx.restore();
+        }
+
+        confettiState.particles = confettiState.particles.filter(
+          (p) => p.y < h + 40 && p.x > -50 && p.x < w + 50 && p.alpha > 0.06
+        );
+
+        if (confettiState.particles.length) {
+          confettiState.raf = requestAnimationFrame(frame);
+        } else {
+          confettiState.animating = false;
+          confettiState.raf = null;
+          ctx.clearRect(0, 0, w, h);
+        }
+      }
+
+      confettiState.raf = requestAnimationFrame(frame);
     }
 
     // B overlay
@@ -1707,9 +1926,14 @@
 
     // Top buttons
     els.moodBoost.addEventListener("click", showMood);
-    els.bossMode.addEventListener("click", () => setBossMode(!document.body.classList.contains("boss-mode")));
+    els.laughBtn.addEventListener("click", showLaugh);
     els.hyperfocus.addEventListener("click", startHyperfocus);
     els.rageBtn.addEventListener("click", openRage);
+    els.laughClose.addEventListener("click", () => els.laughBox.classList.remove("show"));
+    els.confettiBtn.addEventListener("click", () => {
+      launchConfetti(320);
+      setDopamine(+7);
+    });
 
     // Overlay buttons
     els.lockResume.addEventListener("click", () => {
