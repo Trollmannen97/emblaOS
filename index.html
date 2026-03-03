@@ -609,6 +609,72 @@
       font-weight: 800;
       color: rgba(255,245,245,.95);
     }
+    .snake-overlay{
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1600;
+      background: rgba(0,0,0,.78);
+      backdrop-filter: blur(8px);
+      padding: 18px;
+    }
+    .snake-overlay.show{display:flex;}
+    .snake-card{
+      width: min(520px, 96vw);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(10,12,26,.84);
+      box-shadow: 0 20px 60px rgba(0,0,0,.55);
+      padding: 14px;
+    }
+    .snake-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom: 10px;
+    }
+    .snake-meta{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .snake-pill{
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      font-size: 12px;
+      color: rgba(255,255,255,.9);
+      font-family: var(--mono);
+    }
+    .snake-canvas-wrap{
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,105,180,.08), rgba(0,0,0,.2));
+      padding: 10px;
+      display:grid;
+      place-items:center;
+    }
+    #snakeCanvas{
+      width: min(420px, 78vw);
+      height: min(420px, 78vw);
+      max-width: 420px;
+      max-height: 420px;
+      image-rendering: pixelated;
+      border-radius: 10px;
+      border:1px solid rgba(255,255,255,.15);
+      background: rgba(0,0,0,.38);
+    }
+    .snake-help{
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.35;
+    }
     .laugh-box{
       position: fixed;
       left: 14px;
@@ -774,6 +840,7 @@
       letter-spacing:4px;
       background: linear-gradient(90deg,#ff1493,#ff69b4,#ff007f);
       -webkit-background-clip:text;
+      background-clip:text;
       -webkit-text-fill-color:transparent;
       animation: popB 0.4s ease;
       text-shadow: 0 0 25px rgba(255,20,147,.25);
@@ -800,6 +867,7 @@
       letter-spacing:2px;
       background: linear-gradient(90deg,#ff007f,#ff69b4,#ff1493);
       -webkit-background-clip:text;
+      background-clip:text;
       -webkit-text-fill-color:transparent;
       animation: moodPop 0.4s ease;
       text-shadow: 0 0 25px rgba(255,20,147,.25);
@@ -878,6 +946,26 @@
     </div>
   </div>
 
+  <div class="snake-overlay" id="snakeOverlay" role="dialog" aria-modal="true" aria-label="Snake easter egg">
+    <div class="snake-card">
+      <div class="snake-head">
+        <b>Snake (easter egg)</b>
+        <button class="btn danger" id="snakeClose" title="Lukk">×</button>
+      </div>
+      <div class="snake-meta">
+        <div class="snake-pill">Score: <span id="snakeScore">0</span></div>
+        <div class="snake-pill">Best: <span id="snakeBest">0</span></div>
+      </div>
+      <div class="snake-canvas-wrap">
+        <canvas id="snakeCanvas" width="420" height="420"></canvas>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap;">
+        <button class="btn primary" id="snakeRestart">Start på nytt</button>
+      </div>
+      <div class="snake-help">Piltaster/WASD styrer. ESC lukker. Skriv <b>snake</b> for å åpne.</div>
+    </div>
+  </div>
+
   <div class="laugh-box" id="laughBox">
     <div class="laugh-head">
       <span>Dagens dårlige vits</span>
@@ -930,6 +1018,13 @@
       panicOverlay: $("panicOverlay"),
       panicBigBtn: $("panicBigBtn"),
       panicHits: $("panicHits"),
+
+      snakeOverlay: $("snakeOverlay"),
+      snakeCanvas: $("snakeCanvas"),
+      snakeScore: $("snakeScore"),
+      snakeBest: $("snakeBest"),
+      snakeRestart: $("snakeRestart"),
+      snakeClose: $("snakeClose"),
 
       laughBox: $("laughBox"),
       laughText: $("laughText"),
@@ -1789,6 +1884,21 @@
       beepFlip: false,
       audioCtx: null,
     };
+    const SNAKE_BEST_KEY = "emblaos_snake_best_v1";
+    const snakeState = {
+      active: false,
+      grid: 21,
+      cell: 20,
+      tickMs: 120,
+      interval: null,
+      snake: [],
+      food: { x: 10, y: 10 },
+      dir: { x: 1, y: 0 },
+      nextDir: { x: 1, y: 0 },
+      score: 0,
+      gameOver: false,
+      keyBuffer: "",
+    };
 
     function panicBeep(freq = 820, duration = 0.09){
       try{
@@ -1862,6 +1972,155 @@
           "TRYKK KNAPPEN 5 GANGER."
         ]), 1200);
       }, 750);
+    }
+
+    // Snake easter egg
+    function snakeBest(){
+      const n = Number(localStorage.getItem(SNAKE_BEST_KEY));
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+
+    function spawnSnakeFood(){
+      const used = new Set(snakeState.snake.map((p) => `${p.x}:${p.y}`));
+      let x = 0;
+      let y = 0;
+      do {
+        x = rand(0, snakeState.grid - 1);
+        y = rand(0, snakeState.grid - 1);
+      } while (used.has(`${x}:${y}`));
+      snakeState.food = { x, y };
+    }
+
+    function drawSnake(){
+      if (!els.snakeCanvas) return;
+      const ctx = els.snakeCanvas.getContext("2d");
+      if (!ctx) return;
+      const size = snakeState.grid * snakeState.cell;
+
+      ctx.clearRect(0, 0, size, size);
+      ctx.fillStyle = "rgba(0,0,0,.40)";
+      ctx.fillRect(0, 0, size, size);
+
+      ctx.strokeStyle = "rgba(255,255,255,.06)";
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= snakeState.grid; i++) {
+        const p = i * snakeState.cell + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(p, 0);
+        ctx.lineTo(p, size);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, p);
+        ctx.lineTo(size, p);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#ffccdf";
+      const fx = snakeState.food.x * snakeState.cell;
+      const fy = snakeState.food.y * snakeState.cell;
+      ctx.beginPath();
+      ctx.arc(fx + snakeState.cell / 2, fy + snakeState.cell / 2, snakeState.cell * 0.35, 0, Math.PI * 2);
+      ctx.fill();
+
+      for (let i = snakeState.snake.length - 1; i >= 0; i--) {
+        const s = snakeState.snake[i];
+        const x = s.x * snakeState.cell;
+        const y = s.y * snakeState.cell;
+        ctx.fillStyle = i === 0 ? "#ff1493" : "#ff69b4";
+        ctx.fillRect(x + 2, y + 2, snakeState.cell - 4, snakeState.cell - 4);
+      }
+
+      if (snakeState.gameOver) {
+        ctx.fillStyle = "rgba(0,0,0,.55)";
+        ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "#fff";
+        ctx.font = "900 28px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas";
+        ctx.textAlign = "center";
+        ctx.fillText("GAME OVER", size / 2, size / 2 - 8);
+        ctx.font = "700 14px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas";
+        ctx.fillText("Trykk 'Start på nytt'", size / 2, size / 2 + 20);
+      }
+    }
+
+    function updateSnakeScore(){
+      if (els.snakeScore) els.snakeScore.textContent = String(snakeState.score);
+      if (els.snakeBest) els.snakeBest.textContent = String(snakeBest());
+    }
+
+    function snakeStep(){
+      if (!snakeState.active || snakeState.gameOver) return;
+
+      snakeState.dir = snakeState.nextDir;
+      const head = snakeState.snake[0];
+      const nx = head.x + snakeState.dir.x;
+      const ny = head.y + snakeState.dir.y;
+
+      if (nx < 0 || ny < 0 || nx >= snakeState.grid || ny >= snakeState.grid) {
+        snakeState.gameOver = true;
+        drawSnake();
+        return;
+      }
+
+      if (snakeState.snake.some((p) => p.x === nx && p.y === ny)) {
+        snakeState.gameOver = true;
+        drawSnake();
+        return;
+      }
+
+      snakeState.snake.unshift({ x: nx, y: ny });
+      if (nx === snakeState.food.x && ny === snakeState.food.y) {
+        snakeState.score += 1;
+        const best = snakeBest();
+        if (snakeState.score > best) {
+          localStorage.setItem(SNAKE_BEST_KEY, String(snakeState.score));
+        }
+        updateSnakeScore();
+        spawnSnakeFood();
+        setDopamine(+2);
+      } else {
+        snakeState.snake.pop();
+      }
+
+      drawSnake();
+    }
+
+    function startSnakeRound(){
+      snakeState.score = 0;
+      snakeState.gameOver = false;
+      snakeState.dir = { x: 1, y: 0 };
+      snakeState.nextDir = { x: 1, y: 0 };
+      snakeState.snake = [
+        { x: 7, y: 10 },
+        { x: 6, y: 10 },
+        { x: 5, y: 10 },
+      ];
+      spawnSnakeFood();
+      updateSnakeScore();
+      drawSnake();
+
+      if (snakeState.interval) clearInterval(snakeState.interval);
+      snakeState.interval = setInterval(snakeStep, snakeState.tickMs);
+    }
+
+    function closeSnake(){
+      snakeState.active = false;
+      els.snakeOverlay?.classList.remove("show");
+      if (snakeState.interval) clearInterval(snakeState.interval);
+      snakeState.interval = null;
+    }
+
+    function openSnake(){
+      if (!els.snakeOverlay || !els.snakeCanvas) return;
+      snakeState.active = true;
+      els.snakeOverlay.classList.add("show");
+      startSnakeRound();
+      toast("Easter egg", "Snake aktivert 🐍");
+    }
+
+    function setSnakeDirection(x, y){
+      if (!snakeState.active || snakeState.gameOver) return;
+      if (snakeState.dir.x === -x && snakeState.dir.y === -y) return;
+      snakeState.nextDir = { x, y };
     }
 
     // Utblåsing / Ventilasjon
@@ -1971,6 +2230,8 @@
       setDopamine(+2);
     });
     els.rageBurn.addEventListener("click", burnTextWithFlames);
+    els.snakeRestart.addEventListener("click", startSnakeRound);
+    els.snakeClose.addEventListener("click", closeSnake);
     els.panicBigBtn.addEventListener("click", () => {
       if (!panicState.active) return;
       panicState.remainingPresses -= 1;
@@ -1984,17 +2245,33 @@
 
     // Keyboard shortcuts (B / P / R + ESC)
     window.addEventListener("keydown", (e) => {
+      if (snakeState.active) {
+        const key = e.key.toLowerCase();
+        if (key === "arrowup" || key === "w") { e.preventDefault(); setSnakeDirection(0, -1); return; }
+        if (key === "arrowdown" || key === "s") { e.preventDefault(); setSnakeDirection(0, 1); return; }
+        if (key === "arrowleft" || key === "a") { e.preventDefault(); setSnakeDirection(-1, 0); return; }
+        if (key === "arrowright" || key === "d") { e.preventDefault(); setSnakeDirection(1, 0); return; }
+      }
+
       const tag = (document.activeElement?.tagName || "").toLowerCase();
       const typing = tag === "input" || tag === "textarea";
 
       if (e.key === "Escape") {
         if (els.rageOverlay.style.display === "flex") closeRage();
+        if (snakeState.active) closeSnake();
         return;
       }
 
       if (typing) return;
 
       const k = e.key.toLowerCase();
+      snakeState.keyBuffer = (snakeState.keyBuffer + k).slice(-5);
+      if (snakeState.keyBuffer === "snake") {
+        openSnake();
+        snakeState.keyBuffer = "";
+        return;
+      }
+
       if (k === "b") showBaddie();
       if (k === "p") setBossMode(!document.body.classList.contains("boss-mode"));
       if (k === "r") openRage();
