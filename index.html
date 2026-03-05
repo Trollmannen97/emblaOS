@@ -360,6 +360,19 @@
       box-shadow: 0 0 0 3px rgba(255,20,147,.18);
     }
 
+    .globleWrap{
+      display:grid;
+      gap:10px;
+      margin-top:10px;
+    }
+    .globleFrame{
+      width:100%;
+      min-height:360px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(0,0,0,.22);
+    }
+
     /* Toasts */
     .toasts{
       position: fixed;
@@ -519,95 +532,140 @@
       100%{ transform: translateY(-140px) scale(0.6); opacity:0; }
     }
 
-    /* Panic mode */
-    @keyframes panicFlash {
-      0%{
-        background:
-          radial-gradient(800px 500px at 20% 10%, rgba(255,255,255,.18), transparent 60%),
-          linear-gradient(180deg, #910000, #5e0000);
-      }
-      50%{
-        background:
-          radial-gradient(800px 500px at 80% 20%, rgba(255,255,255,.08), transparent 60%),
-          linear-gradient(180deg, #ff1e1e, #a30000);
-      }
-      100%{
-        background:
-          radial-gradient(800px 500px at 20% 10%, rgba(255,255,255,.18), transparent 60%),
-          linear-gradient(180deg, #910000, #5e0000);
-      }
-    }
-    body.panic-mode{
-      animation: panicFlash .28s linear infinite;
-    }
+    /* Panic mode (Work camouflage) */
     .panic-overlay{
       position: fixed;
       inset: 0;
       display: none;
       z-index: 2000;
-      background:
-        repeating-linear-gradient(
-          -45deg,
-          rgba(255,255,255,.08) 0 20px,
-          rgba(255,255,255,.02) 20px 40px
-        ),
-        rgba(110,0,0,.6);
-      backdrop-filter: blur(5px);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
+      background: #d8d8dc;
+      color: #1d1d20;
+      font-family: Arial, Helvetica, sans-serif;
     }
     .panic-overlay.show{
+      display: block;
+    }
+    .panic-workbar{
+      height: 58px;
+      background: #ffffff;
+      border-bottom: 1px solid #ceced3;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
     }
-    .panic-card{
-      width: min(900px, 96vw);
-      border-radius: 24px;
-      border: 2px solid rgba(255,255,255,.45);
-      background: rgba(30,0,0,.72);
-      box-shadow: 0 25px 70px rgba(0,0,0,.6);
+    .panic-brand{
+      font-weight: 900;
+      letter-spacing: .7px;
+      color: #111;
+    }
+    .panic-workbar small{
+      color: #666;
+      font-weight: 700;
+      margin-left: 10px;
+    }
+    .panic-shell{
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: calc(100vh - 58px);
+    }
+    .panic-sidebar{
+      border-right: 1px solid #cbcbcf;
+      background: #efeff1;
+      padding: 16px 0;
+    }
+    .panic-nav-item{
+      padding: 13px 16px;
+      border-bottom: 1px solid #dbdbde;
+      font-weight: 700;
+      color: #111;
+    }
+    .panic-main{
       padding: 20px;
+      background: #dddddf;
     }
-    .panic-title{
+    .panic-main h1{
       margin: 0;
-      font-size: clamp(42px, 10vw, 120px);
-      line-height: .95;
-      letter-spacing: 4px;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 0 0 30px rgba(255,120,120,.75);
+      font-size: 45px;
+      font-weight: 500;
     }
-    .panic-sub{
-      margin: 8px 0 18px;
-      font-size: clamp(14px, 2.8vw, 26px);
-      color: rgba(255,235,235,.95);
-      font-weight: 800;
-      letter-spacing: 1px;
+    .panic-tabs{
+      margin-top: 16px;
+      display: inline-flex;
+      border: 1px solid #b9b9bf;
+      border-radius: 3px;
+      overflow: hidden;
+      font-weight: 700;
+      background: #f4f4f6;
     }
-    .panic-big-btn{
-      width: min(760px, 100%);
-      min-height: 150px;
-      border-radius: 26px;
-      border: 2px solid rgba(255,255,255,.72);
-      background: linear-gradient(180deg, #ff4a4a, #d80000);
+    .panic-tabs span{
+      padding: 11px 18px;
+      border-right: 1px solid #c2c2c7;
+      color: #4d4d54;
+      font-size: 22px;
+    }
+    .panic-tabs span:last-child{border-right:none}
+    .panic-tabs .active{
+      background: #d5ead7;
+      color: #205b27;
+    }
+    .panic-meta{
+      margin-top: 18px;
+      color: #6b6b73;
+      font-size: 30px;
+    }
+    .panic-actions{
+      position: fixed;
+      right: 18px;
+      top: 72px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .panic-search{
+      height: 34px;
+      width: 250px;
+      border: 1px solid #c8c8cc;
+      padding: 0 10px;
+      font-size: 14px;
+      border-radius: 2px;
+    }
+    .panic-safe-btn{
+      border: 1px solid #1f7f3d;
+      background: #198f45;
       color: #fff;
-      font-size: clamp(24px, 5vw, 52px);
-      font-weight: 900;
-      letter-spacing: 1px;
+      font-weight: 700;
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 2px;
       cursor: pointer;
-      box-shadow: 0 0 40px rgba(255,80,80,.65);
-      animation: sirenPulse .45s ease-in-out infinite alternate;
     }
-    @keyframes sirenPulse{
-      from{ transform: scale(1); }
-      to{ transform: scale(1.03); }
-    }
-    .panic-hits{
-      margin-top: 14px;
-      font-size: clamp(16px, 2.8vw, 30px);
+    .panic-exit{
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      border: 1px solid #1c1c1e;
+      background: #252529;
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
       font-weight: 800;
-      color: rgba(255,245,245,.95);
+      cursor: pointer;
+    }
+    .panic-fab{
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 2100;
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      border: none;
+      background: #ffc928;
+      color: #111;
+      font-size: 23px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.35);
+      cursor: pointer;
     }
     .snake-overlay{
       position: fixed;
@@ -937,13 +995,35 @@
     </div>
   </div>
 
-  <div class="panic-overlay" id="panicOverlay" role="alert" aria-live="assertive">
-    <div class="panic-card">
-      <h1 class="panic-title">ALARM</h1>
-      <div class="panic-sub">TRYKK DEN STORE KNAPPEN 5 GANGER FOR Å STOPPE</div>
-      <button class="panic-big-btn" id="panicBigBtn">STOPP ALARM (5)</button>
-      <div class="panic-hits" id="panicHits">Gjenstår: 5 trykk</div>
+  <button class="panic-fab" id="panicFab" title="Panikk-knapp (F8)">😎</button>
+
+  <div class="panic-overlay" id="panicOverlay" role="dialog" aria-modal="true" aria-label="Panic work mode">
+    <div class="panic-workbar">
+      <div><span class="panic-brand">TACDIS</span><small>Verksted</small></div>
+      <div style="font-weight:700; color:#5d5d63;">NO ▾&nbsp;&nbsp; Jonas Rundgren &nbsp; JR</div>
     </div>
+    <div class="panic-shell">
+      <aside class="panic-sidebar">
+        <div class="panic-nav-item">Min oversikt (0)</div>
+        <div class="panic-nav-item">Webbestillinger (0)</div>
+        <div class="panic-nav-item">Oppfølging (0)</div>
+        <div class="panic-nav-item">Ikke fakturerte (0)</div>
+      </aside>
+      <main class="panic-main">
+        <h1>Min oversikt</h1>
+        <div class="panic-tabs">
+          <span>Forrige arbeidsdag (0)</span>
+          <span class="active">I dag (0)</span>
+          <span>Neste arbeidsdag (0)</span>
+        </div>
+        <div class="panic-meta">Finner ikke arbeidsordre</div>
+      </main>
+    </div>
+    <div class="panic-actions">
+      <input class="panic-search" value="Søk arbeidsordre" aria-label="Søk" readonly />
+      <button class="panic-safe-btn">Søk</button>
+    </div>
+    <button class="panic-exit" id="panicCloseBtn">Tilbake til EmblaOS (Esc)</button>
   </div>
 
   <div class="snake-overlay" id="snakeOverlay" role="dialog" aria-modal="true" aria-label="Snake easter egg">
@@ -1016,8 +1096,8 @@
       fireLayer: $("fireLayer"),
 
       panicOverlay: $("panicOverlay"),
-      panicBigBtn: $("panicBigBtn"),
-      panicHits: $("panicHits"),
+      panicFab: $("panicFab"),
+      panicCloseBtn: $("panicCloseBtn"),
 
       snakeOverlay: $("snakeOverlay"),
       snakeCanvas: $("snakeCanvas"),
@@ -1083,6 +1163,7 @@
     // Window state
     let zTop = 10;
     let win = null;
+    let globleWin = null;
 
     function buildMainWindow() {
       if (win) win.remove();
@@ -1209,7 +1290,7 @@
 
         <div class="sidecard">
           <h3>Hurtigknapper</h3>
-          <p class="muted" style="margin:0 0 10px;">B = FORNEBU BADDIE · P = Boss Mode · R = Utblåsing</p>
+          <p class="muted" style="margin:0 0 10px;">B = FORNEBU BADDIE · P = Boss Mode · R = Utblåsing · F8 = Panikk</p>
           <div class="sideactions">
             <button class="btn" id="randomToast">Send systemmelding</button>
             <button class="btn" id="progressTroll">Start “oppdatering”</button>
@@ -1273,6 +1354,7 @@
             </div>
           </div>
 
+
           <div class="card">
             <h2>Systemoppdatering</h2>
             <div class="muted">Installerer: <span class="mono" id="updateName">KonsentrasjonDriver v0.3</span></div>
@@ -1310,6 +1392,140 @@
       initReactionGame(win);
       initTapRushGame(win);
       initNumberGuessGame(win);
+    }
+
+    function buildGlobleWindow() {
+      if (globleWin) globleWin.remove();
+
+      globleWin = document.createElement("div");
+      globleWin.className = "window";
+      globleWin.style.width = "min(560px, 42vw)";
+      globleWin.style.height = "min(620px, 82vh)";
+      globleWin.style.left = `${Math.max(420, window.innerWidth - 590)}px`;
+      globleWin.style.top = "72px";
+      globleWin.style.zIndex = String(++zTop);
+
+      const titlebar = document.createElement("div");
+      titlebar.className = "titlebar";
+
+      const left = document.createElement("div");
+      left.className = "titleleft";
+
+      const icon = document.createElement("div");
+      icon.className = "appicon";
+
+      const titletext = document.createElement("div");
+      titletext.className = "titletext";
+      const t1 = document.createElement("b");
+      t1.textContent = "Globle";
+      const t2 = document.createElement("span");
+      t2.textContent = "Embla-favoritt på høyresiden";
+      titletext.append(t1, t2);
+      left.append(icon, titletext);
+
+      const btns = document.createElement("div");
+      btns.className = "winbtns";
+      const minBtn = document.createElement("div");
+      minBtn.className = "wbtn";
+      minBtn.textContent = "—";
+      minBtn.title = "Minimer";
+      minBtn.addEventListener("click", () => {
+        globleWin.style.display = "none";
+        toast("Minimert", "Globle-vinduet ble minimert.");
+      });
+
+      const openBtn = document.createElement("div");
+      openBtn.className = "wbtn";
+      openBtn.textContent = "↗";
+      openBtn.title = "Åpne i ny fane";
+      openBtn.addEventListener("click", () => {
+        window.open("https://globle-game.com/", "_blank", "noopener,noreferrer");
+      });
+
+      const closeBtn = document.createElement("div");
+      closeBtn.className = "wbtn close";
+      closeBtn.textContent = "×";
+      closeBtn.title = "Lukk";
+      closeBtn.addEventListener("click", () => {
+        if (!globleWin) return;
+        globleWin.remove();
+        globleWin = null;
+      });
+      btns.append(minBtn, openBtn, closeBtn);
+
+      titlebar.append(left, btns);
+
+      let dragging = false;
+      let startX = 0, startY = 0, startL = 0, startT = 0;
+      titlebar.addEventListener("mousedown", (e) => {
+        dragging = true;
+        globleWin.style.zIndex = String(++zTop);
+        startX = e.clientX;
+        startY = e.clientY;
+        startL = parseInt(globleWin.style.left || "0", 10);
+        startT = parseInt(globleWin.style.top || "72", 10);
+      });
+      window.addEventListener("mousemove", (e) => {
+        if (!dragging || !globleWin) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const nl = Math.max(0, Math.min(window.innerWidth - 160, startL + dx));
+        const nt = Math.max(58, Math.min(window.innerHeight - 160, startT + dy));
+        globleWin.style.left = nl + "px";
+        globleWin.style.top = nt + "px";
+      });
+      window.addEventListener("mouseup", () => dragging = false);
+
+      const frameWrap = document.createElement("div");
+      frameWrap.className = "main";
+      frameWrap.style.height = "calc(100% - 44px)";
+      frameWrap.innerHTML = `
+        <div class="card" style="height:100%; display:grid; grid-template-rows:auto auto 1fr; gap:10px;">
+          <div class="muted">Spill Globle direkte i eget vindu på høyresiden.</div>
+          <div class="row">
+            <button class="btn primary" id="globleOpen">Åpne i ny fane</button>
+            <span class="muted" id="globleStatus">Prøver å laste Globle…</span>
+          </div>
+          <iframe
+            class="globleFrame"
+            id="globleFrame"
+            title="Globle"
+            src="https://globle-game.com/"
+            loading="lazy"
+            referrerpolicy="no-referrer"
+            style="min-height:100%;"
+          ></iframe>
+        </div>
+      `;
+
+      globleWin.append(titlebar, frameWrap);
+      els.desktop.appendChild(globleWin);
+      initGloble(globleWin);
+    }
+
+    function initGloble(scope){
+      const openBtn = scope.querySelector("#globleOpen");
+      const frame = scope.querySelector("#globleFrame");
+      const status = scope.querySelector("#globleStatus");
+      if (!openBtn || !frame || !status) return;
+
+      openBtn.addEventListener("click", () => {
+        window.open("https://globle-game.com/", "_blank", "noopener,noreferrer");
+      });
+
+      const timeout = setTimeout(() => {
+        status.textContent = "Innebygging kan være blokkert. Bruk knappen for ny fane.";
+      }, 3000);
+
+      frame.addEventListener("load", () => {
+        clearTimeout(timeout);
+        status.textContent = "Globle lastet i vinduet ✅";
+      });
+
+      frame.addEventListener("error", () => {
+        clearTimeout(timeout);
+        status.textContent = "Kunne ikke laste innebygd. Åpne i ny fane.";
+      });
     }
 
     // --- Mini game: Reaction test ---
@@ -1873,16 +2089,12 @@
       toast("Reset", "Glemt hva vi gjorde. Starter på nytt (mentalt).");
       setDopamine(-10);
       buildMainWindow();
+      buildGlobleWindow();
       startFakeUpdate();
     }
 
     const panicState = {
       active: false,
-      remainingPresses: 5,
-      alarmTimer: null,
-      beepTimer: null,
-      beepFlip: false,
-      audioCtx: null,
     };
     const SNAKE_BEST_KEY = "emblaos_snake_best_v1";
     const snakeState = {
@@ -1900,78 +2112,19 @@
       keyBuffer: "",
     };
 
-    function panicBeep(freq = 820, duration = 0.09){
-      try{
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        if (!panicState.audioCtx) panicState.audioCtx = new AC();
-        if (panicState.audioCtx.state === "suspended") panicState.audioCtx.resume();
-
-        const osc = panicState.audioCtx.createOscillator();
-        const gain = panicState.audioCtx.createGain();
-        osc.type = "square";
-        osc.frequency.value = freq;
-        gain.gain.value = 0.0001;
-        osc.connect(gain);
-        gain.connect(panicState.audioCtx.destination);
-
-        const now = panicState.audioCtx.currentTime;
-        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-        osc.start(now);
-        osc.stop(now + duration + 0.02);
-      } catch (_) {}
-    }
-
-    function updatePanicUI(){
-      if (!els.panicBigBtn || !els.panicHits) return;
-      const r = panicState.remainingPresses;
-      els.panicBigBtn.textContent = `STOPP ALARM (${r})`;
-      els.panicHits.textContent = `Gjenstår: ${r} trykk`;
-    }
-
     function stopPanicMode(){
       panicState.active = false;
-      document.body.classList.remove("panic-mode");
       els.panicOverlay.classList.remove("show");
-      if (panicState.alarmTimer) clearInterval(panicState.alarmTimer);
-      if (panicState.beepTimer) clearInterval(panicState.beepTimer);
-      panicState.alarmTimer = null;
-      panicState.beepTimer = null;
-      panicState.beepFlip = false;
-      toast("Alarm stoppet", "Systemet er tilbake til normal kaos.");
-      setDopamine(+4);
+      toast("Panikkskjerm av", "Tilbake til rosa kaos.");
+      setDopamine(+2);
     }
 
     function panicMode() {
-      if (panicState.active){
-        toast("PANIKK", "ALARM KJØRER ALLEREDE.");
-        return;
-      }
-
+      if (panicState.active) return;
       panicState.active = true;
-      panicState.remainingPresses = 5;
-      document.body.classList.add("panic-mode");
       els.panicOverlay.classList.add("show");
-      updatePanicUI();
-
-      toast("PANIKK-KNAPP", "ALARM AKTIVERT.");
-      setDopamine(-12);
-
-      panicBeep(920, 0.1);
-      panicState.beepTimer = setInterval(() => {
-        panicState.beepFlip = !panicState.beepFlip;
-        panicBeep(panicState.beepFlip ? 980 : 680, 0.08);
-      }, 220);
-
-      panicState.alarmTimer = setInterval(() => {
-        toast("🚨 ALARM 🚨", pick([
-          "KRITISK NIVÅ: PANIKK.",
-          "AKUTT MODUS AKTIVT.",
-          "SYSTEMET SKRIKER.",
-          "TRYKK KNAPPEN 5 GANGER."
-        ]), 1200);
-      }, 750);
+      toast("Panikk-knapp", "Kamuflasje aktivert (arbeidsmodus).", 1800);
+      setDopamine(-4);
     }
 
     // Snake easter egg
@@ -2181,6 +2334,11 @@
         toast("Funnet!", "Vinduet kom tilbake fra den mentale skuffen.");
         setDopamine(+1);
       }
+      if (globleWin && globleWin.style.display === "none") {
+        globleWin.style.display = "";
+        globleWin.style.zIndex = String(++zTop);
+        toast("Globle tilbake", "Spillvinduet er tilbake på høyresiden.");
+      }
     });
 
     // Top buttons
@@ -2232,18 +2390,10 @@
     els.rageBurn.addEventListener("click", burnTextWithFlames);
     els.snakeRestart.addEventListener("click", startSnakeRound);
     els.snakeClose.addEventListener("click", closeSnake);
-    els.panicBigBtn.addEventListener("click", () => {
-      if (!panicState.active) return;
-      panicState.remainingPresses -= 1;
-      panicBeep(540, 0.06);
-      if (panicState.remainingPresses <= 0){
-        stopPanicMode();
-        return;
-      }
-      updatePanicUI();
-    });
+    els.panicFab.addEventListener("click", panicMode);
+    els.panicCloseBtn.addEventListener("click", stopPanicMode);
 
-    // Keyboard shortcuts (B / P / R + ESC)
+    // Keyboard shortcuts (B / P / R / F8 + ESC)
     window.addEventListener("keydown", (e) => {
       if (snakeState.active) {
         const key = e.key.toLowerCase();
@@ -2257,8 +2407,15 @@
       const typing = tag === "input" || tag === "textarea";
 
       if (e.key === "Escape") {
+        if (panicState.active) stopPanicMode();
         if (els.rageOverlay.style.display === "flex") closeRage();
         if (snakeState.active) closeSnake();
+        return;
+      }
+
+      if (e.key === "F8") {
+        e.preventDefault();
+        panicMode();
         return;
       }
 
@@ -2279,6 +2436,7 @@
 
     function init() {
       buildMainWindow();
+      buildGlobleWindow();
       setTimeout(() => toast("Velkommen", "EmblaOS er lastet. Alt er under kontroll (nei)."), 450);
       setTimeout(() => startFakeUpdate(), 1100);
 
