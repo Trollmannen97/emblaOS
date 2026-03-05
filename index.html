@@ -359,6 +359,92 @@
       border-color: rgba(255,105,180,.6);
       box-shadow: 0 0 0 3px rgba(255,20,147,.18);
     }
+    .quizMeta{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 10px 12px;
+      background: rgba(0,0,0,.12);
+    }
+    .quizOptions{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+    }
+    .quizOpt{
+      width:100%;
+      text-align:left;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      cursor:pointer;
+      font-weight: 700;
+    }
+    .quizOpt:hover{background: rgba(255,255,255,.06);}
+    .quizOpt.correct{
+      background: rgba(36,190,120,.24);
+      border-color: rgba(36,190,120,.62);
+    }
+    .quizOpt.wrong{
+      background: rgba(255,0,127,.20);
+      border-color: rgba(255,0,127,.48);
+    }
+    .quizOpt:disabled{
+      opacity:.85;
+      cursor: default;
+    }
+    .wordleBoard{
+      display:grid;
+      gap:6px;
+    }
+    .wordleRow{
+      display:grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap:6px;
+    }
+    .wordleCell{
+      height: 38px;
+      border-radius: 10px;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.18);
+      display:grid;
+      place-items:center;
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .8px;
+      text-transform: uppercase;
+    }
+    .wordleCell.hit{
+      background: rgba(36,190,120,.25);
+      border-color: rgba(36,190,120,.62);
+    }
+    .wordleCell.near{
+      background: rgba(255,198,46,.24);
+      border-color: rgba(255,198,46,.62);
+    }
+    .wordleCell.miss{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.24);
+    }
+    .wordleInputRow{
+      display:flex;
+      gap:10px;
+      flex-wrap: wrap;
+    }
+    .wordleInput{
+      width: 120px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+      font-family: var(--mono);
+    }
 
     /* Toasts */
     .toasts{
@@ -519,95 +605,140 @@
       100%{ transform: translateY(-140px) scale(0.6); opacity:0; }
     }
 
-    /* Panic mode */
-    @keyframes panicFlash {
-      0%{
-        background:
-          radial-gradient(800px 500px at 20% 10%, rgba(255,255,255,.18), transparent 60%),
-          linear-gradient(180deg, #910000, #5e0000);
-      }
-      50%{
-        background:
-          radial-gradient(800px 500px at 80% 20%, rgba(255,255,255,.08), transparent 60%),
-          linear-gradient(180deg, #ff1e1e, #a30000);
-      }
-      100%{
-        background:
-          radial-gradient(800px 500px at 20% 10%, rgba(255,255,255,.18), transparent 60%),
-          linear-gradient(180deg, #910000, #5e0000);
-      }
-    }
-    body.panic-mode{
-      animation: panicFlash .28s linear infinite;
-    }
+    /* Panic mode (Work camouflage) */
     .panic-overlay{
       position: fixed;
       inset: 0;
       display: none;
       z-index: 2000;
-      background:
-        repeating-linear-gradient(
-          -45deg,
-          rgba(255,255,255,.08) 0 20px,
-          rgba(255,255,255,.02) 20px 40px
-        ),
-        rgba(110,0,0,.6);
-      backdrop-filter: blur(5px);
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      text-align: center;
+      background: #d8d8dc;
+      color: #1d1d20;
+      font-family: Arial, Helvetica, sans-serif;
     }
     .panic-overlay.show{
+      display: block;
+    }
+    .panic-workbar{
+      height: 58px;
+      background: #ffffff;
+      border-bottom: 1px solid #ceced3;
       display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
     }
-    .panic-card{
-      width: min(900px, 96vw);
-      border-radius: 24px;
-      border: 2px solid rgba(255,255,255,.45);
-      background: rgba(30,0,0,.72);
-      box-shadow: 0 25px 70px rgba(0,0,0,.6);
+    .panic-brand{
+      font-weight: 900;
+      letter-spacing: .7px;
+      color: #111;
+    }
+    .panic-workbar small{
+      color: #666;
+      font-weight: 700;
+      margin-left: 10px;
+    }
+    .panic-shell{
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      height: calc(100vh - 58px);
+    }
+    .panic-sidebar{
+      border-right: 1px solid #cbcbcf;
+      background: #efeff1;
+      padding: 16px 0;
+    }
+    .panic-nav-item{
+      padding: 13px 16px;
+      border-bottom: 1px solid #dbdbde;
+      font-weight: 700;
+      color: #111;
+    }
+    .panic-main{
       padding: 20px;
+      background: #dddddf;
     }
-    .panic-title{
+    .panic-main h1{
       margin: 0;
-      font-size: clamp(42px, 10vw, 120px);
-      line-height: .95;
-      letter-spacing: 4px;
-      font-weight: 900;
-      color: #fff;
-      text-shadow: 0 0 30px rgba(255,120,120,.75);
+      font-size: 45px;
+      font-weight: 500;
     }
-    .panic-sub{
-      margin: 8px 0 18px;
-      font-size: clamp(14px, 2.8vw, 26px);
-      color: rgba(255,235,235,.95);
-      font-weight: 800;
-      letter-spacing: 1px;
+    .panic-tabs{
+      margin-top: 16px;
+      display: inline-flex;
+      border: 1px solid #b9b9bf;
+      border-radius: 3px;
+      overflow: hidden;
+      font-weight: 700;
+      background: #f4f4f6;
     }
-    .panic-big-btn{
-      width: min(760px, 100%);
-      min-height: 150px;
-      border-radius: 26px;
-      border: 2px solid rgba(255,255,255,.72);
-      background: linear-gradient(180deg, #ff4a4a, #d80000);
+    .panic-tabs span{
+      padding: 11px 18px;
+      border-right: 1px solid #c2c2c7;
+      color: #4d4d54;
+      font-size: 22px;
+    }
+    .panic-tabs span:last-child{border-right:none}
+    .panic-tabs .active{
+      background: #d5ead7;
+      color: #205b27;
+    }
+    .panic-meta{
+      margin-top: 18px;
+      color: #6b6b73;
+      font-size: 30px;
+    }
+    .panic-actions{
+      position: fixed;
+      right: 18px;
+      top: 72px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .panic-search{
+      height: 34px;
+      width: 250px;
+      border: 1px solid #c8c8cc;
+      padding: 0 10px;
+      font-size: 14px;
+      border-radius: 2px;
+    }
+    .panic-safe-btn{
+      border: 1px solid #1f7f3d;
+      background: #198f45;
       color: #fff;
-      font-size: clamp(24px, 5vw, 52px);
-      font-weight: 900;
-      letter-spacing: 1px;
+      font-weight: 700;
+      height: 34px;
+      padding: 0 16px;
+      border-radius: 2px;
       cursor: pointer;
-      box-shadow: 0 0 40px rgba(255,80,80,.65);
-      animation: sirenPulse .45s ease-in-out infinite alternate;
     }
-    @keyframes sirenPulse{
-      from{ transform: scale(1); }
-      to{ transform: scale(1.03); }
-    }
-    .panic-hits{
-      margin-top: 14px;
-      font-size: clamp(16px, 2.8vw, 30px);
+    .panic-exit{
+      position: fixed;
+      right: 18px;
+      bottom: 16px;
+      border: 1px solid #1c1c1e;
+      background: #252529;
+      color: #fff;
+      border-radius: 10px;
+      padding: 10px 14px;
       font-weight: 800;
-      color: rgba(255,245,245,.95);
+      cursor: pointer;
+    }
+    .panic-fab{
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 2100;
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      border: none;
+      background: #ffc928;
+      color: #111;
+      font-size: 23px;
+      box-shadow: 0 10px 20px rgba(0,0,0,.35);
+      cursor: pointer;
     }
     .snake-overlay{
       position: fixed;
@@ -937,13 +1068,35 @@
     </div>
   </div>
 
-  <div class="panic-overlay" id="panicOverlay" role="alert" aria-live="assertive">
-    <div class="panic-card">
-      <h1 class="panic-title">ALARM</h1>
-      <div class="panic-sub">TRYKK DEN STORE KNAPPEN 5 GANGER FOR Å STOPPE</div>
-      <button class="panic-big-btn" id="panicBigBtn">STOPP ALARM (5)</button>
-      <div class="panic-hits" id="panicHits">Gjenstår: 5 trykk</div>
+  <button class="panic-fab" id="panicFab" title="Panikk-knapp (F8)">😎</button>
+
+  <div class="panic-overlay" id="panicOverlay" role="dialog" aria-modal="true" aria-label="Panic work mode">
+    <div class="panic-workbar">
+      <div><span class="panic-brand">TACDIS</span><small>Verksted</small></div>
+      <div style="font-weight:700; color:#5d5d63;">NO ▾&nbsp;&nbsp; Jonas Rundgren &nbsp; JR</div>
     </div>
+    <div class="panic-shell">
+      <aside class="panic-sidebar">
+        <div class="panic-nav-item">Min oversikt (0)</div>
+        <div class="panic-nav-item">Webbestillinger (0)</div>
+        <div class="panic-nav-item">Oppfølging (0)</div>
+        <div class="panic-nav-item">Ikke fakturerte (0)</div>
+      </aside>
+      <main class="panic-main">
+        <h1>Min oversikt</h1>
+        <div class="panic-tabs">
+          <span>Forrige arbeidsdag (0)</span>
+          <span class="active">I dag (0)</span>
+          <span>Neste arbeidsdag (0)</span>
+        </div>
+        <div class="panic-meta">Finner ikke arbeidsordre</div>
+      </main>
+    </div>
+    <div class="panic-actions">
+      <input class="panic-search" value="Søk arbeidsordre" aria-label="Søk" readonly />
+      <button class="panic-safe-btn">Søk</button>
+    </div>
+    <button class="panic-exit" id="panicCloseBtn">Tilbake til EmblaOS (Esc)</button>
   </div>
 
   <div class="snake-overlay" id="snakeOverlay" role="dialog" aria-modal="true" aria-label="Snake easter egg">
@@ -1016,8 +1169,8 @@
       fireLayer: $("fireLayer"),
 
       panicOverlay: $("panicOverlay"),
-      panicBigBtn: $("panicBigBtn"),
-      panicHits: $("panicHits"),
+      panicFab: $("panicFab"),
+      panicCloseBtn: $("panicCloseBtn"),
 
       snakeOverlay: $("snakeOverlay"),
       snakeCanvas: $("snakeCanvas"),
@@ -1091,6 +1244,9 @@
       win.className = "window";
       win.style.left = "60px";
       win.style.top = "72px";
+      win.style.minWidth = "620px";
+      win.style.minHeight = "460px";
+      win.style.resize = "both";
       win.style.zIndex = String(++zTop);
 
       const titlebar = document.createElement("div");
@@ -1142,6 +1298,7 @@
           win.style.top = "12px";
           win.style.width = "calc(100% - 24px)";
           win.style.height = "calc(100% - 24px)";
+          win.style.resize = "none";
           win.dataset.max = "1";
           toast("Maksimert", "Mer plass. Samme hjerne.");
         } else {
@@ -1150,6 +1307,7 @@
           win.style.top = prev.top || "72px";
           win.style.width = prev.width || "";
           win.style.height = prev.height || "";
+          win.style.resize = "both";
           win.dataset.max = "0";
           toast("Normal", "Tilbake til standard størrelse.");
         }
@@ -1209,10 +1367,8 @@
 
         <div class="sidecard">
           <h3>Hurtigknapper</h3>
-          <p class="muted" style="margin:0 0 10px;">B = FORNEBU BADDIE · P = Boss Mode · R = Utblåsing</p>
+          <p class="muted" style="margin:0 0 10px;">B = FORNEBU BADDIE · P = Boss Mode · R = Utblåsing · F8 = Panikk</p>
           <div class="sideactions">
-            <button class="btn" id="randomToast">Send systemmelding</button>
-            <button class="btn" id="progressTroll">Start “oppdatering”</button>
             <button class="btn danger" id="panic">PANIKK-KNAPP</button>
           </div>
         </div>
@@ -1274,12 +1430,44 @@
           </div>
 
           <div class="card">
-            <h2>Systemoppdatering</h2>
-            <div class="muted">Installerer: <span class="mono" id="updateName">KonsentrasjonDriver v0.3</span></div>
-            <div class="progress"><div class="bar" id="bar"></div></div>
-            <div class="row" style="margin-top:8px;">
-              <div class="muted">Status</div>
-              <div class="mono" id="updateStatus">Klar (men litt skeptisk)</div>
+            <h2>Quiz-modus</h2>
+            <div class="muted">Korte spørsmål med progresjon, streak og ny runde-knapp.</div>
+            <div class="gameWrap">
+              <div class="quizMeta">
+                <div class="muted">Spm: <b id="quizProgress">1/6</b></div>
+                <div class="muted">Poeng: <b id="quizScore">0</b></div>
+                <div class="muted">Streak: <b id="quizStreak">0</b></div>
+              </div>
+              <div class="mono" id="quizCategory">Kategori: Klar</div>
+              <div class="big" id="quizQuestion" style="font-size:16px; line-height:1.35;">Trykk «Start quiz».</div>
+              <div class="quizOptions" id="quizOptions"></div>
+              <div class="muted" id="quizFeedback">Du kan ta ny runde når som helst.</div>
+              <div class="row">
+                <button class="btn primary" id="quizStart">Start quiz</button>
+                <button class="btn" id="quizNext" disabled>Neste spørsmål</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Wordle-modus</h2>
+            <div class="muted">Gjett ordet på 5 bokstaver. 6 forsøk, tydelig fargefeedback.</div>
+            <div class="gameWrap">
+              <div class="gameStats">
+                <div class="muted">Spilt:</div>
+                <div class="big" id="wordlePlayed">0</div>
+                <div class="muted">Vunnet:</div>
+                <div class="big" id="wordleWins">0</div>
+                <div class="muted">Streak:</div>
+                <div class="big" id="wordleStreak">0</div>
+              </div>
+              <div class="wordleBoard" id="wordleBoard"></div>
+              <div class="wordleInputRow">
+                <input class="guessInput wordleInput" id="wordleInput" maxlength="5" placeholder="5 bokstaver" />
+                <button class="btn primary" id="wordleGuess">Gjett</button>
+                <button class="btn danger" id="wordleReset">Nytt ord</button>
+              </div>
+              <div class="muted" id="wordleHint">Skriv et ord og trykk «Gjett».</div>
             </div>
           </div>
         </div>
@@ -1290,32 +1478,23 @@
       els.desktop.appendChild(win);
 
       // Sidebar hooks
-      const toastBtn = win.querySelector("#randomToast");
-      const progBtn  = win.querySelector("#progressTroll");
       const panicBtn = win.querySelector("#panic");
-
-      if (toastBtn) toastBtn.addEventListener("click", () => {
-        const m = pick(toastMsgs);
-        toast(m.t, m.b);
-        setDopamine(+1);
-      });
-
-      if (progBtn) progBtn.addEventListener("click", () => {
-        startFakeUpdate();
-        setDopamine(+2);
-      });
 
       if (panicBtn) panicBtn.addEventListener("click", () => panicMode());
 
       initReactionGame(win);
       initTapRushGame(win);
       initNumberGuessGame(win);
+      initQuizGame(win);
+      initWordleGame(win);
     }
 
     // --- Mini game: Reaction test ---
     const BEST_KEY = "emblaos_best_ms_v3";
     const TAP_BEST_KEY = "emblaos_tap_best_v1";
     const GUESS_BEST_KEY = "emblaos_guess_best_v1";
+    const QUIZ_BEST_STREAK_KEY = "emblaos_quiz_best_streak_v1";
+    const WORDLE_STATS_KEY = "emblaos_wordle_stats_v1";
     let gameState = "idle"; // idle | waiting | go
     let goAt = 0;
     let waitTimer = null;
@@ -1577,57 +1756,297 @@
       });
     }
 
-    // Fake update progress
-    let updateTimer = null;
-    function startFakeUpdate() {
-      const bar = document.getElementById("bar");
-      const status = document.getElementById("updateStatus");
-      const name = document.getElementById("updateName");
-      if (!bar || !status || !name) return;
+    // --- Mini game: Quiz ---
+    function initQuizGame(scope){
+      const progressEl = scope.querySelector("#quizProgress");
+      const scoreEl = scope.querySelector("#quizScore");
+      const streakEl = scope.querySelector("#quizStreak");
+      const categoryEl = scope.querySelector("#quizCategory");
+      const questionEl = scope.querySelector("#quizQuestion");
+      const optionsEl = scope.querySelector("#quizOptions");
+      const feedbackEl = scope.querySelector("#quizFeedback");
+      const startBtn = scope.querySelector("#quizStart");
+      const nextBtn = scope.querySelector("#quizNext");
+      if (!progressEl || !scoreEl || !streakEl || !categoryEl || !questionEl || !optionsEl || !feedbackEl || !startBtn || !nextBtn) return;
 
-      if (updateTimer) clearInterval(updateTimer);
+      const bank = [
+        { c: "Tech", q: "Hva står HTML for?", o: ["HyperText Markup Language", "HighText Machine Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Level"], a: 0 },
+        { c: "Popkultur", q: "Hvilken dag publiseres vanligvis ny Wordle i lokal tid?", o: ["Mandag", "Hver dag", "Kun helg", "Annenhver dag"], a: 1 },
+        { c: "Norge", q: "Hva er hovedstaden i Norge?", o: ["Bergen", "Stavanger", "Oslo", "Trondheim"], a: 2 },
+        { c: "Design", q: "Hva gir best UX i et spillgrensesnitt?", o: ["Skjulte knapper", "Tydelig feedback", "Ingen statusmeldinger", "Kun tastatur uten hint"], a: 1 },
+        { c: "EmblaOS", q: "Hvilken hurtigtast åpner panikkmodus her?", o: ["F2", "F8", "Ctrl+P", "Alt+Z"], a: 1 },
+        { c: "Logikk", q: "Hva er 9 + 7?", o: ["14", "15", "16", "17"], a: 2 },
+        { c: "Geografi", q: "Hvilket hav ligger vest for Norge?", o: ["Atlanterhavet", "Stillehavet", "Sørishavet", "Indiahavet"], a: 0 },
+        { c: "Web", q: "Hvilken HTTP-status betyr «Not Found»?", o: ["200", "301", "404", "500"], a: 2 },
+        { c: "Spill", q: "Hvor mange bokstaver er det i klassisk Wordle?", o: ["4", "5", "6", "7"], a: 1 },
+      ];
 
-      name.textContent = pick([
-        "KonsentrasjonDriver v0.3",
-        "PrioriteringsModul v1.1",
-        "HuskelappService v2.0",
-        "MotivasjonsPatch (eksperimentell)"
-      ]);
+      const rounds = 6;
+      let picked = [];
+      let idx = 0;
+      let score = 0;
+      let streak = 0;
+      let running = false;
 
-      let p = 0;
-      status.textContent = "Starter… (denne gangen mener vi det)";
-      bar.style.width = "0%";
-
-      updateTimer = setInterval(() => {
-        const roll = rand(0, 100);
-        if (roll < 10) p = Math.max(0, p - rand(1, 7));
-        else if (roll < 70) p = Math.min(97, p + rand(1, 6));
-        else p = Math.min(99, p + rand(8, 18));
-
-        bar.style.width = p + "%";
-
-        if (p < 10) status.textContent = "Lasters… (ser på en video først)";
-        else if (p < 35) status.textContent = "Installerer… (fant en bedre måte)";
-        else if (p < 60) status.textContent = "Konfigurerer… (googler én liten ting)";
-        else if (p < 85) status.textContent = "Nesten ferdig… (men får en idé)";
-        else if (p < 98) status.textContent = "98%… (klassiker)";
-        else status.textContent = "99%… (for alltid)";
-
-        if (p >= 99 && rand(0, 100) > 70) {
-          clearInterval(updateTimer);
-          updateTimer = null;
-          bar.style.width = "100%";
-          status.textContent = "Fullført! (sannhet ikke garantert)";
-          toast("Oppdatering fullført", "Alt er bedre nå. I teorien.");
-          setDopamine(+6);
-          setTimeout(() => {
-            bar.style.width = "12%";
-            status.textContent = "Oops. Ruller tilbake (fordi… hvorfor ikke).";
-          }, 900);
+      function shuffle(arr){
+        const x = arr.slice();
+        for (let i = x.length - 1; i > 0; i--) {
+          const j = rand(0, i);
+          const tmp = x[i];
+          x[i] = x[j];
+          x[j] = tmp;
         }
-      }, 260);
+        return x;
+      }
 
-      toast("Oppdatering startet", "Progress baren har ingen juridisk binding til virkeligheten.");
+      function lockOptions(lock = true){
+        optionsEl.querySelectorAll("button").forEach((b) => b.disabled = lock);
+      }
+
+      function renderQuestion(){
+        const item = picked[idx];
+        progressEl.textContent = `${idx + 1}/${rounds}`;
+        scoreEl.textContent = String(score);
+        streakEl.textContent = String(streak);
+        categoryEl.textContent = `Kategori: ${item.c}`;
+        questionEl.textContent = item.q;
+        feedbackEl.textContent = "Velg ett alternativ.";
+        nextBtn.disabled = true;
+
+        optionsEl.innerHTML = "";
+        item.o.forEach((txt, i) => {
+          const b = document.createElement("button");
+          b.className = "quizOpt";
+          b.textContent = txt;
+          b.addEventListener("click", () => answer(i));
+          optionsEl.appendChild(b);
+        });
+      }
+
+      function finishQuiz(){
+        running = false;
+        const best = Number(localStorage.getItem(QUIZ_BEST_STREAK_KEY) || "0");
+        const star = streak > best ? " Ny best-streak!" : "";
+        if (streak > best) localStorage.setItem(QUIZ_BEST_STREAK_KEY, String(streak));
+        progressEl.textContent = `${rounds}/${rounds}`;
+        scoreEl.textContent = String(score);
+        questionEl.textContent = `Ferdig! Du fikk ${score}/${rounds}.${star}`;
+        feedbackEl.textContent = `Best streak totalt: ${Math.max(best, streak)}. Start ny quiz når du vil.`;
+        categoryEl.textContent = "Kategori: Oppsummering";
+        optionsEl.innerHTML = "";
+        nextBtn.disabled = true;
+        startBtn.textContent = "Start ny quiz";
+        setDopamine(score >= 4 ? +8 : +3);
+      }
+
+      function answer(selected){
+        if (!running) return;
+        const item = picked[idx];
+        const buttons = Array.from(optionsEl.querySelectorAll("button"));
+        lockOptions(true);
+
+        buttons.forEach((b, i) => {
+          if (i === item.a) b.classList.add("correct");
+        });
+
+        if (selected === item.a) {
+          score += 1;
+          streak += 1;
+          feedbackEl.textContent = "Riktig! Bra flyt.";
+          setDopamine(+3);
+        } else {
+          streak = 0;
+          if (buttons[selected]) buttons[selected].classList.add("wrong");
+          feedbackEl.textContent = `Feil. Riktig svar: ${item.o[item.a]}`;
+          setDopamine(-1);
+        }
+
+        scoreEl.textContent = String(score);
+        streakEl.textContent = String(streak);
+
+        if (idx >= rounds - 1) {
+          nextBtn.disabled = true;
+          finishQuiz();
+          return;
+        }
+        nextBtn.disabled = false;
+      }
+
+      function startQuiz(){
+        picked = shuffle(bank).slice(0, rounds);
+        idx = 0;
+        score = 0;
+        streak = 0;
+        running = true;
+        startBtn.textContent = "Start på nytt";
+        renderQuestion();
+      }
+
+      startBtn.addEventListener("click", startQuiz);
+      nextBtn.addEventListener("click", () => {
+        if (!running) return;
+        idx += 1;
+        renderQuestion();
+      });
+    }
+
+    // --- Mini game: Wordle ---
+    function initWordleGame(scope){
+      const board = scope.querySelector("#wordleBoard");
+      const input = scope.querySelector("#wordleInput");
+      const guessBtn = scope.querySelector("#wordleGuess");
+      const resetBtn = scope.querySelector("#wordleReset");
+      const hint = scope.querySelector("#wordleHint");
+      const playedEl = scope.querySelector("#wordlePlayed");
+      const winsEl = scope.querySelector("#wordleWins");
+      const streakEl = scope.querySelector("#wordleStreak");
+      if (!board || !input || !guessBtn || !resetBtn || !hint || !playedEl || !winsEl || !streakEl) return;
+
+      const words = [
+        "BRAIN", "SMILE", "PARTY", "FOCUS", "BLOOM", "SPARK", "CHILL", "BRAVE",
+        "LIGHT", "SWEET", "DREAM", "HAPPY", "MUSIC", "POWER", "MAGIC", "GLASS",
+      ];
+      const maxRows = 6;
+      const len = 5;
+      let target = pick(words);
+      let rows = [];
+      let done = false;
+      let stats = { played: 0, wins: 0, streak: 0 };
+
+      function loadStats(){
+        try {
+          const raw = JSON.parse(localStorage.getItem(WORDLE_STATS_KEY) || "{}");
+          stats = {
+            played: Number.isFinite(raw.played) ? raw.played : 0,
+            wins: Number.isFinite(raw.wins) ? raw.wins : 0,
+            streak: Number.isFinite(raw.streak) ? raw.streak : 0,
+          };
+        } catch {
+          stats = { played: 0, wins: 0, streak: 0 };
+        }
+        playedEl.textContent = String(stats.played);
+        winsEl.textContent = String(stats.wins);
+        streakEl.textContent = String(stats.streak);
+      }
+
+      function saveStats(){
+        localStorage.setItem(WORDLE_STATS_KEY, JSON.stringify(stats));
+        playedEl.textContent = String(stats.played);
+        winsEl.textContent = String(stats.wins);
+        streakEl.textContent = String(stats.streak);
+      }
+
+      function evaluate(guess){
+        const res = Array(len).fill("miss");
+        const counts = {};
+        for (let i = 0; i < len; i++) {
+          const c = target[i];
+          counts[c] = (counts[c] || 0) + 1;
+        }
+        for (let i = 0; i < len; i++) {
+          if (guess[i] === target[i]) {
+            res[i] = "hit";
+            counts[guess[i]] -= 1;
+          }
+        }
+        for (let i = 0; i < len; i++) {
+          if (res[i] === "hit") continue;
+          const c = guess[i];
+          if ((counts[c] || 0) > 0) {
+            res[i] = "near";
+            counts[c] -= 1;
+          }
+        }
+        return res;
+      }
+
+      function drawBoard(){
+        board.innerHTML = "";
+        for (let r = 0; r < maxRows; r++) {
+          const rowEl = document.createElement("div");
+          rowEl.className = "wordleRow";
+          const data = rows[r];
+          for (let i = 0; i < len; i++) {
+            const cell = document.createElement("div");
+            cell.className = "wordleCell";
+            if (data) {
+              cell.textContent = data.word[i];
+              cell.classList.add(data.states[i]);
+            }
+            rowEl.appendChild(cell);
+          }
+          board.appendChild(rowEl);
+        }
+      }
+
+      function hardReset(announce = false){
+        target = pick(words);
+        rows = [];
+        done = false;
+        hint.textContent = "Skriv et ord og trykk «Gjett».";
+        input.value = "";
+        input.disabled = false;
+        guessBtn.disabled = false;
+        drawBoard();
+        input.focus();
+        if (announce) toast("Wordle", "Nytt ord klart.");
+      }
+
+      function finishRound(winRound){
+        done = true;
+        stats.played += 1;
+        if (winRound) {
+          stats.wins += 1;
+          stats.streak += 1;
+        } else {
+          stats.streak = 0;
+        }
+        saveStats();
+        input.disabled = true;
+        guessBtn.disabled = true;
+      }
+
+      function submitGuess(){
+        if (done) return;
+        const guess = input.value.trim().toUpperCase();
+        if (!/^[A-Z]{5}$/.test(guess)) {
+          hint.textContent = "Skriv nøyaktig 5 bokstaver (A-Z).";
+          return;
+        }
+        if (rows.length >= maxRows) return;
+
+        const states = evaluate(guess);
+        rows.push({ word: guess, states });
+        drawBoard();
+        input.value = "";
+        input.focus();
+
+        if (guess === target) {
+          hint.textContent = `Riktig ord! Du klarte det på ${rows.length} forsøk.`;
+          finishRound(true);
+          setDopamine(+8);
+          return;
+        }
+
+        if (rows.length >= maxRows) {
+          hint.textContent = `Ingen forsøk igjen. Ordet var ${target}.`;
+          finishRound(false);
+          setDopamine(-2);
+          return;
+        }
+
+        hint.textContent = `Forsøk ${rows.length}/${maxRows}. Fortsett!`;
+        setDopamine(+1);
+      }
+
+      loadStats();
+      hardReset(false);
+
+      guessBtn.addEventListener("click", submitGuess);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") submitGuess();
+      });
+      resetBtn.addEventListener("click", () => hardReset(true));
     }
 
     // “Skal bare sjekke én ting” = kaos-toasts
@@ -1873,16 +2292,10 @@
       toast("Reset", "Glemt hva vi gjorde. Starter på nytt (mentalt).");
       setDopamine(-10);
       buildMainWindow();
-      startFakeUpdate();
     }
 
     const panicState = {
       active: false,
-      remainingPresses: 5,
-      alarmTimer: null,
-      beepTimer: null,
-      beepFlip: false,
-      audioCtx: null,
     };
     const SNAKE_BEST_KEY = "emblaos_snake_best_v1";
     const snakeState = {
@@ -1900,78 +2313,19 @@
       keyBuffer: "",
     };
 
-    function panicBeep(freq = 820, duration = 0.09){
-      try{
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return;
-        if (!panicState.audioCtx) panicState.audioCtx = new AC();
-        if (panicState.audioCtx.state === "suspended") panicState.audioCtx.resume();
-
-        const osc = panicState.audioCtx.createOscillator();
-        const gain = panicState.audioCtx.createGain();
-        osc.type = "square";
-        osc.frequency.value = freq;
-        gain.gain.value = 0.0001;
-        osc.connect(gain);
-        gain.connect(panicState.audioCtx.destination);
-
-        const now = panicState.audioCtx.currentTime;
-        gain.gain.exponentialRampToValueAtTime(0.12, now + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
-        osc.start(now);
-        osc.stop(now + duration + 0.02);
-      } catch (_) {}
-    }
-
-    function updatePanicUI(){
-      if (!els.panicBigBtn || !els.panicHits) return;
-      const r = panicState.remainingPresses;
-      els.panicBigBtn.textContent = `STOPP ALARM (${r})`;
-      els.panicHits.textContent = `Gjenstår: ${r} trykk`;
-    }
-
     function stopPanicMode(){
       panicState.active = false;
-      document.body.classList.remove("panic-mode");
       els.panicOverlay.classList.remove("show");
-      if (panicState.alarmTimer) clearInterval(panicState.alarmTimer);
-      if (panicState.beepTimer) clearInterval(panicState.beepTimer);
-      panicState.alarmTimer = null;
-      panicState.beepTimer = null;
-      panicState.beepFlip = false;
-      toast("Alarm stoppet", "Systemet er tilbake til normal kaos.");
-      setDopamine(+4);
+      toast("Panikkskjerm av", "Tilbake til rosa kaos.");
+      setDopamine(+2);
     }
 
     function panicMode() {
-      if (panicState.active){
-        toast("PANIKK", "ALARM KJØRER ALLEREDE.");
-        return;
-      }
-
+      if (panicState.active) return;
       panicState.active = true;
-      panicState.remainingPresses = 5;
-      document.body.classList.add("panic-mode");
       els.panicOverlay.classList.add("show");
-      updatePanicUI();
-
-      toast("PANIKK-KNAPP", "ALARM AKTIVERT.");
-      setDopamine(-12);
-
-      panicBeep(920, 0.1);
-      panicState.beepTimer = setInterval(() => {
-        panicState.beepFlip = !panicState.beepFlip;
-        panicBeep(panicState.beepFlip ? 980 : 680, 0.08);
-      }, 220);
-
-      panicState.alarmTimer = setInterval(() => {
-        toast("🚨 ALARM 🚨", pick([
-          "KRITISK NIVÅ: PANIKK.",
-          "AKUTT MODUS AKTIVT.",
-          "SYSTEMET SKRIKER.",
-          "TRYKK KNAPPEN 5 GANGER."
-        ]), 1200);
-      }, 750);
+      toast("Panikk-knapp", "Kamuflasje aktivert (arbeidsmodus).", 1800);
+      setDopamine(-4);
     }
 
     // Snake easter egg
@@ -2232,18 +2586,10 @@
     els.rageBurn.addEventListener("click", burnTextWithFlames);
     els.snakeRestart.addEventListener("click", startSnakeRound);
     els.snakeClose.addEventListener("click", closeSnake);
-    els.panicBigBtn.addEventListener("click", () => {
-      if (!panicState.active) return;
-      panicState.remainingPresses -= 1;
-      panicBeep(540, 0.06);
-      if (panicState.remainingPresses <= 0){
-        stopPanicMode();
-        return;
-      }
-      updatePanicUI();
-    });
+    els.panicFab.addEventListener("click", panicMode);
+    els.panicCloseBtn.addEventListener("click", stopPanicMode);
 
-    // Keyboard shortcuts (B / P / R + ESC)
+    // Keyboard shortcuts (B / P / R / F8 + ESC)
     window.addEventListener("keydown", (e) => {
       if (snakeState.active) {
         const key = e.key.toLowerCase();
@@ -2257,8 +2603,15 @@
       const typing = tag === "input" || tag === "textarea";
 
       if (e.key === "Escape") {
+        if (panicState.active) stopPanicMode();
         if (els.rageOverlay.style.display === "flex") closeRage();
         if (snakeState.active) closeSnake();
+        return;
+      }
+
+      if (e.key === "F8") {
+        e.preventDefault();
+        panicMode();
         return;
       }
 
@@ -2280,7 +2633,6 @@
     function init() {
       buildMainWindow();
       setTimeout(() => toast("Velkommen", "EmblaOS er lastet. Alt er under kontroll (nei)."), 450);
-      setTimeout(() => startFakeUpdate(), 1100);
 
       if (TOASTS_ENABLED) {
         setInterval(() => {
