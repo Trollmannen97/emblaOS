@@ -1756,18 +1756,21 @@
       });
     }
 
-    // --- Mini game: Quiz ---
-    function initQuizGame(scope){
-      const progressEl = scope.querySelector("#quizProgress");
-      const scoreEl = scope.querySelector("#quizScore");
-      const streakEl = scope.querySelector("#quizStreak");
-      const categoryEl = scope.querySelector("#quizCategory");
-      const questionEl = scope.querySelector("#quizQuestion");
-      const optionsEl = scope.querySelector("#quizOptions");
-      const feedbackEl = scope.querySelector("#quizFeedback");
-      const startBtn = scope.querySelector("#quizStart");
-      const nextBtn = scope.querySelector("#quizNext");
-      if (!progressEl || !scoreEl || !streakEl || !categoryEl || !questionEl || !optionsEl || !feedbackEl || !startBtn || !nextBtn) return;
+  
+/ --- Mini game: Quiz ---
+function initQuizGame(scope) {
+  const progressEl = scope.querySelector("#quizProgress");
+  const scoreEl = scope.querySelector("#quizScore");
+  const streakEl = scope.querySelector("#quizStreak");
+  const categoryEl = scope.querySelector("#quizCategory");
+  const questionEl = scope.querySelector("#quizQuestion");
+  const optionsEl = scope.querySelector("#quizOptions");
+  const feedbackEl = scope.querySelector("#quizFeedback");
+  const startBtn = scope.querySelector("#quizStart");
+  const nextBtn = scope.querySelector("#quizNext");
+
+  if (!progressEl || !scoreEl || !streakEl || !categoryEl || !questionEl || !optionsEl || !feedbackEl || !startBtn || !nextBtn) return;
+
 
 const bank = [
   // --- FILM ---
@@ -1852,124 +1855,143 @@ const bank = [
   { c: "Memes", q: "Hva heter memet der en fyr ser på en annen jente mens kjæresten reagerer?", o: ["Distracted Boyfriend", "Cheater Meme", "Backwards Look", "Side-Gaze Guy"], a: 0 }
 ];
 
-      const rounds = 6;
-      let picked = [];
-      let idx = 0;
-      let score = 0;
-      let streak = 0;
-      let running = false;
+     
+  const rounds = 6;
+  let picked = [];
+  let idx = 0;
+  let score = 0;
+  let streak = 0;
+  let running = false;
 
-      function shuffle(arr){
-        const x = arr.slice();
-        for (let i = x.length - 1; i > 0; i--) {
-          const j = rand(0, i);
-          const tmp = x[i];
-          x[i] = x[j];
-          x[j] = tmp;
-        }
-        return x;
-      }
-
-      function lockOptions(lock = true){
-        optionsEl.querySelectorAll("button").forEach((b) => b.disabled = lock);
-      }
-
-      function renderQuestion(){
-        const item = picked[idx];
-        progressEl.textContent = `${idx + 1}/${rounds}`;
-        scoreEl.textContent = String(score);
-        streakEl.textContent = String(streak);
-        categoryEl.textContent = `Kategori: ${item.c}`;
-        questionEl.textContent = item.q;
-        feedbackEl.textContent = "Velg ett alternativ.";
-        nextBtn.disabled = true;
-
-        optionsEl.innerHTML = "";
-        item.o.forEach((txt, i) => {
-          const b = document.createElement("button");
-          b.className = "quizOpt";
-          b.textContent = txt;
-          b.addEventListener("click", () => answer(i));
-          optionsEl.appendChild(b);
-        });
-      }
-
-      function finishQuiz(){
-        running = false;
-        const best = Number(localStorage.getItem(QUIZ_BEST_STREAK_KEY) || "0");
-        const star = streak > best ? " Ny best-streak!" : "";
-        if (streak > best) localStorage.setItem(QUIZ_BEST_STREAK_KEY, String(streak));
-        progressEl.textContent = `${rounds}/${rounds}`;
-        scoreEl.textContent = String(score);
-        questionEl.textContent = `Ferdig! Du fikk ${score}/${rounds}.${star}`;
-        feedbackEl.textContent = `Best streak totalt: ${Math.max(best, streak)}. Start ny quiz når du vil.`;
-        categoryEl.textContent = "Kategori: Oppsummering";
-        optionsEl.innerHTML = "";
-        nextBtn.disabled = true;
-        startBtn.textContent = "Start ny quiz";
-        setDopamine(score >= 4 ? +8 : +3);
-      }
-
-      function answer(selected){
-        if (!running) return;
-        const item = picked[idx];
-        const buttons = Array.from(optionsEl.querySelectorAll("button"));
-        lockOptions(true);
-
-        buttons.forEach((b, i) => {
-          if (i === item.a) b.classList.add("correct");
-        });
-
-        if (selected === item.a) {
-          score += 1;
-          streak += 1;
-          feedbackEl.textContent = "Riktig! Bra flyt.";
-          setDopamine(+3);
-        } else {
-          streak = 0;
-          if (buttons[selected]) buttons[selected].classList.add("wrong");
-          feedbackEl.textContent = `Feil. Riktig svar: ${item.o[item.a]}`;
-          setDopamine(-1);
-        }
-
-        scoreEl.textContent = String(score);
-        streakEl.textContent = String(streak);
-
-        if (idx >= rounds - 1) {
-          nextBtn.disabled = true;
-          finishQuiz();
-          return;
-        }
-        nextBtn.disabled = false;
-      }
-
-  let usedQuestions = new Set();
-
-function startQuiz() {
-  const available = bank.filter((_, index) => !usedQuestions.has(index));
-
-  // Hvis det ikke er nok spørsmål igjen, tømmes historikken automatisk
-  if (available.length < rounds) {
-    usedQuestions.clear();
+  // --- FIX 1: GOD SHUFFLE (Math.random, ikke rand)
+  function shuffle(arr) {
+    const x = arr.slice();
+    for (let i = x.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [x[i], x[j]] = [x[j], x[i]];
+    }
+    return x;
   }
 
-  // Finn tilgjengelige spørsmål på nytt etter evt reset
-  const freshPool = bank
-    .map((q, i) => ({ ...q, index: i }))
-    .filter(q => !usedQuestions.has(q.index));
+  // --- Locking
+  function lockOptions(lock = true) {
+    optionsEl.querySelectorAll("button").forEach(b => b.disabled = lock);
+  }
 
-  const shuffled = shuffle(freshPool).slice(0, rounds);
+  // --- Rendering
+  function renderQuestion() {
+    const item = picked[idx];
+    progressEl.textContent = `${idx + 1}/${rounds}`;
+    scoreEl.textContent = String(score);
+    streakEl.textContent = String(streak);
+    categoryEl.textContent = `Kategori: ${item.c}`;
+    questionEl.textContent = item.q;
+    feedbackEl.textContent = "Velg ett alternativ.";
+    nextBtn.disabled = true;
 
-  // Marker som brukt
-  shuffled.forEach(q => usedQuestions.add(q.index));
+    optionsEl.innerHTML = "";
+    item.o.forEach((txt, i) => {
+      const b = document.createElement("button");
+      b.className = "quizOpt";
+      b.textContent = txt;
+      b.addEventListener("click", () => answer(i));
+      optionsEl.appendChild(b);
+    });
+  }
 
-  picked = shuffled;
-  idx = 0;
-  score = 0;
-  streak = 0;
-  running = true;
-  startBtn.textContent = "Start på nytt";
-  renderQuestion();
+  // --- Finish
+  function finishQuiz() {
+    running = false;
+    const best = Number(localStorage.getItem(QUIZ_BEST_STREAK_KEY) || "0");
+    const star = streak > best ? " Ny best-streak!" : "";
+    if (streak > best) localStorage.setItem(QUIZ_BEST_STREAK_KEY, String(streak));
+
+    progressEl.textContent = `${rounds}/${rounds}`;
+    scoreEl.textContent = String(score);
+    questionEl.textContent = `Ferdig! Du fikk ${score}/${rounds}.${star}`;
+    feedbackEl.textContent = `Best streak totalt: ${Math.max(best, streak)}. Start ny quiz når du vil.`;
+    categoryEl.textContent = "Kategori: Oppsummering";
+    optionsEl.innerHTML = "";
+    nextBtn.disabled = true;
+    startBtn.textContent = "Start ny quiz";
+    setDopamine(score >= 4 ? +8 : +3);
+  }
+
+  // --- Answer
+  function answer(selected) {
+    if (!running) return;
+    const item = picked[idx];
+    const buttons = Array.from(optionsEl.querySelectorAll("button"));
+    lockOptions(true);
+
+    buttons.forEach((b, i) => {
+      if (i === item.a) b.classList.add("correct");
+    });
+
+    if (selected === item.a) {
+      score++;
+      streak++;
+      feedbackEl.textContent = "Riktig! Bra flyt.";
+      setDopamine(+3);
+    } else {
+      streak = 0;
+      if (buttons[selected]) buttons[selected].classList.add("wrong");
+      feedbackEl.textContent = `Feil. Riktig svar: ${item.o[item.a]}`;
+      setDopamine(-1);
+    }
+
+    scoreEl.textContent = String(score);
+    streakEl.textContent = String(streak);
+
+    if (idx >= rounds - 1) {
+      nextBtn.disabled = true;
+      finishQuiz();
+      return;
+    }
+
+    nextBtn.disabled = false;
+  }
+
+  // --- FIX 2: HINDRE REPETISJON
+  let usedQuestions = new Set();
+
+  function startQuiz() {
+
+    // Finn spørsmål som ikke er brukt
+    const available = bank.map((q, i) => ({ ...q, index: i }))
+                          .filter(q => !usedQuestions.has(q.index));
+
+    // Hvis det mangler nok, reset
+    if (available.length < rounds) {
+      usedQuestions.clear();
+    }
+
+    // Reberegn tilgjengelige
+    const fresh = bank.map((q, i) => ({ ...q, index: i }))
+                      .filter(q => !usedQuestions.has(q.index));
+
+    // Ta tilfeldige
+    const shuffled = shuffle(fresh).slice(0, rounds);
+
+    // Marker som brukt
+    shuffled.forEach(q => usedQuestions.add(q.index));
+
+    picked = shuffled;
+    idx = 0;
+    score = 0;
+    streak = 0;
+    running = true;
+    startBtn.textContent = "Start på nytt";
+    renderQuestion();
+  }
+
+  // --- Listeners
+  startBtn.addEventListener("click", startQuiz);
+  nextBtn.addEventListener("click", () => {
+    if (!running) return;
+    idx++;
+    renderQuestion();
+  });
 }
 
     // --- Mini game: Wordle ---
