@@ -1943,23 +1943,34 @@ const bank = [
         nextBtn.disabled = false;
       }
 
-      function startQuiz(){
-        picked = shuffle(bank).slice(0, rounds);
-        idx = 0;
-        score = 0;
-        streak = 0;
-        running = true;
-        startBtn.textContent = "Start på nytt";
-        renderQuestion();
-      }
+  let usedQuestions = new Set();
 
-      startBtn.addEventListener("click", startQuiz);
-      nextBtn.addEventListener("click", () => {
-        if (!running) return;
-        idx += 1;
-        renderQuestion();
-      });
-    }
+function startQuiz() {
+  const available = bank.filter((_, index) => !usedQuestions.has(index));
+
+  // Hvis det ikke er nok spørsmål igjen, tømmes historikken automatisk
+  if (available.length < rounds) {
+    usedQuestions.clear();
+  }
+
+  // Finn tilgjengelige spørsmål på nytt etter evt reset
+  const freshPool = bank
+    .map((q, i) => ({ ...q, index: i }))
+    .filter(q => !usedQuestions.has(q.index));
+
+  const shuffled = shuffle(freshPool).slice(0, rounds);
+
+  // Marker som brukt
+  shuffled.forEach(q => usedQuestions.add(q.index));
+
+  picked = shuffled;
+  idx = 0;
+  score = 0;
+  streak = 0;
+  running = true;
+  startBtn.textContent = "Start på nytt";
+  renderQuestion();
+}
 
     // --- Mini game: Wordle ---
     function initWordleGame(scope){
