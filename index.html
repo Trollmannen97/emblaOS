@@ -1769,20 +1769,88 @@
       const nextBtn = scope.querySelector("#quizNext");
       if (!progressEl || !scoreEl || !streakEl || !categoryEl || !questionEl || !optionsEl || !feedbackEl || !startBtn || !nextBtn) return;
 
-      const bank = [
-        { c: "Tech", q: "Hva står HTML for?", o: ["HyperText Markup Language", "HighText Machine Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Level"], a: 0 },
-        { c: "Popkultur", q: "Hvilken dag publiseres vanligvis ny Wordle i lokal tid?", o: ["Mandag", "Hver dag", "Kun helg", "Annenhver dag"], a: 1 },
-        { c: "Norge", q: "Hva er hovedstaden i Norge?", o: ["Bergen", "Stavanger", "Oslo", "Trondheim"], a: 2 },
-        { c: "Design", q: "Hva gir best UX i et spillgrensesnitt?", o: ["Skjulte knapper", "Tydelig feedback", "Ingen statusmeldinger", "Kun tastatur uten hint"], a: 1 },
-        { c: "EmblaOS", q: "Hvilken hurtigtast åpner panikkmodus her?", o: ["F2", "F8", "Ctrl+P", "Alt+Z"], a: 1 },
-        { c: "Logikk", q: "Hva er 9 + 7?", o: ["14", "15", "16", "17"], a: 2 },
-        { c: "Geografi", q: "Hvilket hav ligger vest for Norge?", o: ["Atlanterhavet", "Stillehavet", "Sørishavet", "Indiahavet"], a: 0 },
-        { c: "Web", q: "Hvilken HTTP-status betyr «Not Found»?", o: ["200", "301", "404", "500"], a: 2 },
-        { c: "Spill", q: "Hvor mange bokstaver er det i klassisk Wordle?", o: ["4", "5", "6", "7"], a: 1 },
-        { c: "Naturfag", q: "Hvor mange nerver har en klitoris?", o: ["10 000 nervefibre", "6 000 nervefibre", "2 000 nervefibre", "15 000 nervefibre"], a: 0 },
-        { c: "Naturfag", q: "Hvor stor er en norsk erigert penis? (Gjennomsnitt)", o: ["10 cm", "12cm", "15cm", "13cm"], a: 3 },
-        { c: "Naturfag", q: "Hvor mange nordmenn har hatt analsex?", o: ["35%", "50%", "10%", "80%"], a: 1 },
-      ];
+const bank = [
+  // --- FILM ---
+  { c: "Film", q: "Hvem regisserte 'Titanic'?", o: ["James Cameron", "Ridley Scott", "Steven Spielberg", "Peter Jackson"], a: 0 },
+  { c: "Film", q: "Hva heter roboten i Star Wars som ligner en søppelbøtte?", o: ["C-3PO", "R2-D2", "BB-8", "T-800"], a: 1 },
+  { c: "Film", q: "Hvilket år kom filmen 'The Matrix'?", o: ["1995", "1999", "2001", "2003"], a: 1 },
+  { c: "Film", q: "Hvilken superhelt er kjent som 'The Dark Knight'?", o: ["Superman", "Batman", "Iron Man", "Wolverine"], a: 1 },
+  { c: "Film", q: "Hvem spilte Jack Sparrow?", o: ["Orlando Bloom", "Johnny Depp", "Brad Pitt", "Keanu Reeves"], a: 1 },
+
+  // --- BØKER ---
+  { c: "Bøker", q: "Hvem skrev 'Harry Potter'?", o: ["J.K. Rowling", "Suzanne Collins", "Stephen King", "George Orwell"], a: 0 },
+  { c: "Bøker", q: "Hva heter den første boka i 'Hunger Games'?", o: ["Catching Fire", "Mockingjay", "The Hunger Games", "Arena of Fire"], a: 2 },
+  { c: "Bøker", q: "Hvem skrev 'To Kill a Mockingbird'?", o: ["Harper Lee", "Jane Austen", "Ernest Hemingway", "F. Scott Fitzgerald"], a: 0 },
+  { c: "Bøker", q: "Hva er navnet på trollmannen i 'Ringenes Herre'?", o: ["Gandalf", "Saruman", "Radagast", "Elrond"], a: 0 },
+  { c: "Bøker", q: "Hvilken norsk forfatter skrev 'Naiv.Super'?", o: ["Karl Ove Knausgård", "Jo Nesbø", "Erlend Loe", "Roy Jacobsen"], a: 2 },
+
+  // --- NATURFAG ---
+  { c: "Naturfag", q: "Hva heter den største planeten i solsystemet?", o: ["Jupiter", "Mars", "Saturn", "Venus"], a: 0 },
+  { c: "Naturfag", q: "Hva er hovedgassen i jordens atmosfære?", o: ["Oksygen", "Nitrogen", "Hydrogen", "CO₂"], a: 1 },
+  { c: "Naturfag", q: "Hva måles i Newton?", o: ["Energi", "Kraft", "Hastighet", "Temperatur"], a: 1 },
+  { c: "Naturfag", q: "Hvor mange kromosomer har et menneske?", o: ["23", "46", "48", "44"], a: 1 },
+  { c: "Naturfag", q: "Hva slags dyr er en komodovaran?", o: ["Slange", "Fugl", "Øgle", "Pattedyr"], a: 2 },
+  { c: "Naturfag", q: "Hvor mange nerver har en klitoris?", o: ["10 000 nervefibre", "6 000 nervefibre", "2 000 nervefibre", "15 000 nervefibre"], a: 0 },
+  { c: "Naturfag", q: "Hvor stor er en norsk erigert penis? (Gjennomsnitt)", o: ["10 cm", "12cm", "15cm", "13cm"], a: 3 },
+  { c: "Naturfag", q: "Hvor mange nordmenn har hatt analsex?", o: ["35%", "50%", "10%", "80%"], a: 1 },
+
+  // --- SMINKE ---
+  { c: "Sminke", q: "Hva brukes concealer primært til?", o: ["Markere lepper", "Dekke ujevnheter", "Skape glans", "Farge bryn"], a: 1 },
+  { c: "Sminke", q: "Hva er et vanlig steg før foundation?", o: ["Primer", "Setting spray", "Mascara", "Contour"], a: 0 },
+  { c: "Sminke", q: "Hva gjør highlighter?", o: ["Gir matte områder", "Gir glød", "Dekker porer", "Fikserer sminken"], a: 1 },
+  { c: "Sminke", q: "Hva kalles teknikken for å forme ansiktet med lys og skygge?", o: ["Blending", "Cut crease", "Contouring", "Baking"], a: 2 },
+  { c: "Sminke", q: "Hva brukes micellar water til?", o: ["Fjerne sminke", "Fikse hår", "Matte huden", "Gi farge"], a: 0 },
+
+  // --- HELSE ---
+  { c: "Helse", q: "Hva er et vanlig symptom på dehydrering?", o: ["Hodepine", "Tett nese", "Rennende øyne", "Høy feber"], a: 0 },
+  { c: "Helse", q: "Hvor mange ben har skjelettet til et voksent menneske?", o: ["198", "206", "183", "210"], a: 1 },
+  { c: "Helse", q: "Hva er normalt blodtrykk omtrent?", o: ["200/150", "120/80", "90/40", "160/100"], a: 1 },
+  { c: "Helse", q: "Hvilket organ produserer insulin?", o: ["Nyrene", "Leveren", "Bukspyttkjertelen", "Magesekken"], a: 2 },
+  { c: "Helse", q: "Hva betyr 'puls'?", o: ["Hjertets rytme", "Blodets temperatur", "Lungekapasitet", "Oksygennivå i hjernen"], a: 0 },
+
+  // --- NATUR ---
+  { c: "Natur", q: "Hva er Norges høyeste fjell?", o: ["Galdhøpiggen", "Glittertind", "Høgslottet", "Store Skagastølstind"], a: 0 },
+  { c: "Natur", q: "Hva heter verdens lengste elv?", o: ["Amazonas", "Nilen", "Yangtze", "Mississippi"], a: 0 },
+  { c: "Natur", q: "Hva slags dyr er en spekkhogger?", o: ["Hai", "Delfin", "Hval", "Hai-type"], a: 1 },
+  { c: "Natur", q: "Hvor lever isbjørnen naturlig?", o: ["Antarktis", "Arktis", "Kanada", "Sibir"], a: 1 },
+  { c: "Natur", q: "Hva er verdens høyeste treart?", o: ["Eik", "Sekvoja", "Furu", "Lønn"], a: 1 },
+
+  // --- ADHD ---
+  { c: "ADHD", q: "Hva står ADHD for?", o: ["Attention Deficit Hyperactivity Disorder", "Active Disorder Hyper Drive", "Autonomic Delay Hyper Disorder", "Attention Drive Habit Disorder"], a: 0 },
+  { c: "ADHD", q: "Hva er en vanlig utfordring ved ADHD?", o: ["Dårlig hørsel", "Impulsivitet", "Nedsatt balanse", "Svak muskulatur"], a: 1 },
+  { c: "ADHD", q: "Hva kan ofte hjelpe personer med ADHD?", o: ["Mye koffein", "Gode rutiner", "Lavt proteininntak", "Ujevn søvn"], a: 1 },
+  { c: "ADHD", q: "Hvilken type behandling brukes ofte?", o: ["Antibiotika", "Stimulant‑medisin", "Hormonkur", "Antivirale midler"], a: 1 },
+  { c: "ADHD", q: "Hva er en vanlig styrke hos personer med ADHD?", o: ["Kjedelig arbeid", "Kreativitet", "Dårlig hukommelse", "Lite energi"], a: 1 },
+
+  // --- MEDISIN ---
+  { c: "Medisin", q: "Hva måles feber i?", o: ["Volt", "Lumen", "Grader Celsius", "Newton"], a: 2 },
+  { c: "Medisin", q: "Hva brukes paracetamol til?", o: ["Sår", "Forkjølelse", "Smerte og feber", "Allergi"], a: 2 },
+  { c: "Medisin", q: "Hva står EKG for?", o: ["ElektroKardioGrafi", "EnergoKardiogram", "EksternKraftGeometri", "ElektroKroppsGraf"], a: 0 },
+  { c: "Medisin", q: "Hvilket av disse er et virus?", o: ["Influensa", "Salmonella", "Borrelia", "E. coli"], a: 0 },
+  { c: "Medisin", q: "Hva er en vaksine?", o: ["En smertestillende", "En forebyggende behandling", "En blodfortynner", "En bakteriegift"], a: 1 },
+
+  // --- TEKNOLOGI ---
+  { c: "Teknologi", q: "Hva står CPU for?", o: ["Central Processing Unit", "Control Power Utility", "Computer Performance Unit", "Central Power Unit"], a: 0 },
+  { c: "Teknologi", q: "Hva er en piksel?", o: ["En lydfil", "Et bildepunkt", "En datavirus‑type", "Et skjermkort"], a: 1 },
+  { c: "Teknologi", q: "Hva slags selskap er Microsoft?", o: ["Flyprodusent", "Teknologiselskap", "Bilprodusent", "Dagligvarekjede"], a: 1 },
+  { c: "Teknologi", q: "Hva er Bluetooth brukt til?", o: ["Trådløs dataoverføring", "Kjøling av PC", "Antivirusbeskyttelse", "Lagring"], a: 0 },
+  { c: "Teknologi", q: "Hva er HTML?", o: ["En nettprotokoll", "Et programmeringsspråk", "Et oppmerkingsspråk", "Et antivirusprogram"], a: 2 },
+//--- Memes --.
+  { c: "Memes", q: "Hva sier hunden i Doge‑memet vanligvis?", o: ["Such wow", "Very bored", "Much sad", "So confused"], a: 0 },
+  { c: "Memes", q: "Hva kalles frosken som ofte brukes i memes?", o: ["Kermit", "Pepe", "Freddy", "Gus"], a: 1 },
+  { c: "Memes", q: "Hvor stammer 'Rickroll' fra?", o: ["En TikTok-trend", "En YouTube-video", "En reklame", "Et TV-show"], a: 1 },
+  { c: "Memes", q: "Hvilken sang spilles når man blir rickrollet?", o: ["Never Gonna Give You Up", "Take On Me", "Africa", "Eye of the Tiger"], a: 0 },
+  { c: "Memes", q: "Hvilket dyr sier 'Nyan Nyan Nyan' i et kjent meme?", o: ["Hund", "Katt", "Kanin", "Ugle"], a: 1 },
+  { c: "Memes", q: "Hvilket uttrykk følger ofte 'This is fine'‑memet?", o: ["Alt er kaos", "Alt brenner", "Dette går bra", "Jeg gir opp"], a: 1 },
+  { c: "Internettkultur", q: "Hvilken plattform gjorde 'vine‑humor' kjent?", o: ["Tumblr", "Snapchat", "Vine", "TikTok"], a: 2 },
+  { c: "Internettkultur", q: "Hva kalles bilder der man legger tekst over en fyr som peker på hodet sitt tenkende?", o: ["Galaxy Brain", "Roll Safe", "Smart Guy", "Brain Boss"], a: 1 },
+  { c: "Memes", q: "Hva roper Shia LaBeouf i et motivasjonsmeme?", o: ["Just do it!", "You can win!", "Go faster!", "Believe harder!"], a: 0 },
+  { c: "Memes", q: "Hva heter jenta som står foran et brennende hus i et kjent meme?", o: ["Disaster Girl", "Fire Child", "Chaos Kid", "Burn Meme Girl"], a: 0 },
+  { c: "Internettkultur", q: "Hva betyr 'cringe' på nett?", o: ["Inspirerende", "Kleint/flaut", "Morsomt", "Imponerende"], a: 1 },
+  { c: "Internettkultur", q: "Hva er en 'TikTok duet'?", o: ["En privat melding", "To videoer ved siden av hverandre", "Et filter", "En hashtag"], a: 1 },
+  { c: "Memes", q: "Hva heter mannen som peker på en whiteboard med en kontroversiell mening?", o: ["Change My Mind", "Prove Me Wrong", "Tell Me Something", "You Can't Argue"], a: 0 },
+  { c: "Memes", q: "Hva heter memet der en fyr ser på en annen jente mens kjæresten reagerer?", o: ["Distracted Boyfriend", "Cheater Meme", "Backwards Look", "Side-Gaze Guy"], a: 0 }
+];
 
       const rounds = 6;
       let picked = [];
