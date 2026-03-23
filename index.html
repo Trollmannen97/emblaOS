@@ -445,6 +445,141 @@
       text-align: center;
       font-family: var(--mono);
     }
+    .windowBody{
+      height: calc(100% - 44px);
+      padding: 12px;
+      overflow:auto;
+    }
+    .window.stealthWindow{
+      background:
+        linear-gradient(180deg, rgba(240,244,250,.08), rgba(240,244,250,.03)),
+        rgba(14,18,27,.62);
+      border-color: rgba(192,198,208,.16);
+      box-shadow: 0 24px 70px rgba(0,0,0,.35);
+    }
+    .appicon.stealthIcon{
+      background: linear-gradient(135deg, rgba(146,159,180,.95), rgba(111,126,149,.88));
+      box-shadow: 0 0 0 4px rgba(158,171,192,.16);
+    }
+    .stealthCard{
+      border-color: rgba(190,196,210,.18);
+      background:
+        linear-gradient(180deg, rgba(245,247,250,.035), rgba(245,247,250,.015)),
+        rgba(16,19,28,.38);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .stealthHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .stealthBadge{
+      padding: 5px 9px;
+      border-radius: 999px;
+      border:1px solid rgba(186,192,205,.18);
+      background: rgba(226,230,238,.06);
+      color: rgba(227,231,240,.78);
+      font-size: 11px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+    .stealthMeta{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(90px, 1fr));
+      gap:8px;
+    }
+    .stealthStat{
+      border:1px solid rgba(184,190,202,.14);
+      border-radius: 12px;
+      background: rgba(229,232,238,.04);
+      padding: 10px 12px;
+    }
+    .stealthStat span{
+      display:block;
+      color: rgba(218,223,234,.62);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .stealthStat b{
+      font-family: var(--mono);
+      font-size: 18px;
+      color: rgba(245,247,250,.92);
+    }
+    .ledgerBoard{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px;
+      border-radius: 16px;
+      border:1px solid rgba(184,190,202,.16);
+      background:
+        linear-gradient(180deg, rgba(240,243,248,.045), rgba(240,243,248,.02)),
+        rgba(10,12,18,.28);
+    }
+    .ledgerCell{
+      aspect-ratio: 1 / 1;
+      min-height: 58px;
+      border-radius: 12px;
+      border:1px solid rgba(193,198,208,.14);
+      background: rgba(228,232,238,.05);
+      color: rgba(237,240,245,.9);
+      display:grid;
+      place-items:center;
+      font-family: var(--mono);
+      font-size: clamp(15px, 2.5vw, 22px);
+      font-weight: 800;
+      letter-spacing: .4px;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease;
+    }
+    .ledgerCell.empty{
+      color: transparent;
+      background: rgba(228,232,238,.022);
+    }
+    .ledgerCell.tile-2{background: rgba(214,219,228,.08);}
+    .ledgerCell.tile-4{background: rgba(205,212,223,.12);}
+    .ledgerCell.tile-8{background: rgba(194,203,217,.18);}
+    .ledgerCell.tile-16{background: rgba(183,194,210,.23);}
+    .ledgerCell.tile-32{background: rgba(171,185,203,.28);}
+    .ledgerCell.tile-64{background: rgba(161,176,198,.34);}
+    .ledgerCell.tile-128,
+    .ledgerCell.tile-256,
+    .ledgerCell.tile-512,
+    .ledgerCell.tile-1024,
+    .ledgerCell.tile-2048{
+      background: rgba(147,165,191,.40);
+      border-color: rgba(196,207,223,.28);
+      color:#f6f8fb;
+    }
+    .ledgerHint{
+      border:1px dashed rgba(183,190,202,.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(230,234,241,.025);
+      color: rgba(214,219,229,.72);
+      line-height: 1.4;
+      font-size: 12.5px;
+    }
+    .ledgerControls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .ledgerWindowLayout{
+      display:grid;
+      gap:12px;
+    }
+    .ledgerSummary{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
 
     /* Toasts */
     .toasts{
@@ -927,6 +1062,7 @@
       <button class="btn" id="laughBtn">Le-knapp 😂</button>
       <button class="btn" id="hyperfocus">Hyperfokus-modus</button>
       <button class="btn" id="rageBtn">Utblåsing 💢</button>
+      <button class="btn" id="ledgerLaunch">20:48-matrise</button>
     </div>
   </div>
 
@@ -1145,6 +1281,7 @@
       laughBtn: $("laughBtn"),
       hyperfocus: $("hyperfocus"),
       rageBtn: $("rageBtn"),
+      ledgerLaunch: $("ledgerLaunch"),
 
       overlay: $("overlay"),
       lockTime: $("lockTime"),
@@ -1236,6 +1373,144 @@
     // Window state
     let zTop = 10;
     let win = null;
+    let ledgerWin = null;
+
+    function attachWindowInteractions(target, titlebar, opts = {}){
+      const {
+        defaultLeft = "60px",
+        defaultTop = "72px",
+        onClose,
+        onMinimize,
+      } = opts;
+
+      target.addEventListener("mousedown", () => {
+        target.style.zIndex = String(++zTop);
+      });
+
+      let dragging = false;
+      let startX = 0;
+      let startY = 0;
+      let startL = 0;
+      let startT = 0;
+
+      titlebar.addEventListener("mousedown", (e) => {
+        if (target.dataset.max === "1") return;
+        dragging = true;
+        target.style.zIndex = String(++zTop);
+        startX = e.clientX;
+        startY = e.clientY;
+        startL = parseInt(target.style.left || defaultLeft, 10);
+        startT = parseInt(target.style.top || defaultTop, 10);
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        const nl = Math.max(0, Math.min(window.innerWidth - 120, startL + dx));
+        const nt = Math.max(0, Math.min(window.innerHeight - 120, startT + dy));
+        target.style.left = nl + "px";
+        target.style.top = nt + "px";
+      });
+
+      window.addEventListener("mouseup", () => {
+        dragging = false;
+      });
+
+      return {
+        minimize(){
+          target.style.display = "none";
+          if (onMinimize) onMinimize();
+        },
+        toggleMaximize(){
+          const isMax = target.dataset.max === "1";
+          if (!isMax) {
+            target.dataset.prev = JSON.stringify({
+              left: target.style.left,
+              top: target.style.top,
+              width: target.style.width,
+              height: target.style.height,
+              resize: target.style.resize,
+            });
+            target.style.left = "12px";
+            target.style.top = "12px";
+            target.style.width = "calc(100% - 24px)";
+            target.style.height = "calc(100% - 24px)";
+            target.style.resize = "none";
+            target.dataset.max = "1";
+            return true;
+          }
+
+          const prev = JSON.parse(target.dataset.prev || "{}");
+          target.style.left = prev.left || defaultLeft;
+          target.style.top = prev.top || defaultTop;
+          target.style.width = prev.width || "";
+          target.style.height = prev.height || "";
+          target.style.resize = prev.resize || "both";
+          target.dataset.max = "0";
+          return false;
+        },
+        close(){
+          target.remove();
+          if (onClose) onClose();
+        },
+      };
+    }
+
+    function restoreWindow(target, label){
+      if (!target || target.style.display !== "none") return false;
+      target.style.display = "";
+      target.style.zIndex = String(++zTop);
+      toast("Funnet!", `${label} kom tilbake fra den mentale skuffen.`);
+      setDopamine(+1);
+      return true;
+    }
+
+    function createTitlebar(iconClass, title, subtitle){
+      const titlebar = document.createElement("div");
+      titlebar.className = "titlebar";
+
+      const left = document.createElement("div");
+      left.className = "titleleft";
+
+      const icon = document.createElement("div");
+      icon.className = `appicon${iconClass ? ` ${iconClass}` : ""}`;
+
+      const titletext = document.createElement("div");
+      titletext.className = "titletext";
+
+      const t1 = document.createElement("b");
+      t1.textContent = title;
+
+      const t2 = document.createElement("span");
+      t2.textContent = subtitle;
+
+      titletext.append(t1, t2);
+      left.append(icon, titletext);
+
+      const btns = document.createElement("div");
+      btns.className = "winbtns";
+
+      const minBtn = document.createElement("div");
+      minBtn.className = "wbtn";
+      minBtn.textContent = "—";
+      minBtn.title = "Minimer";
+
+      const maxBtn = document.createElement("div");
+      maxBtn.className = "wbtn";
+      maxBtn.textContent = "▢";
+      maxBtn.title = "Maksimer";
+
+      const closeBtn = document.createElement("div");
+      closeBtn.className = "wbtn close";
+      closeBtn.textContent = "×";
+      closeBtn.title = "Lukk";
+
+      btns.append(minBtn, maxBtn, closeBtn);
+      titlebar.append(left, btns);
+
+      return { titlebar, minBtn, maxBtn, closeBtn };
+    }
 
     function buildMainWindow() {
       if (win) win.remove();
@@ -1249,106 +1524,32 @@
       win.style.resize = "both";
       win.style.zIndex = String(++zTop);
 
-      const titlebar = document.createElement("div");
-      titlebar.className = "titlebar";
-
-      const left = document.createElement("div");
-      left.className = "titleleft";
-
-      const icon = document.createElement("div");
-      icon.className = "appicon";
-
-      const titletext = document.createElement("div");
-      titletext.className = "titletext";
-
-      const t1 = document.createElement("b");
-      t1.textContent = "EmblaOS Kontrollpanel";
-
-      const t2 = document.createElement("span");
-      t2.textContent = "Status: Barbie rosa, men stabil-ish";
-
-      titletext.append(t1,t2);
-      left.append(icon,titletext);
-
-      const btns = document.createElement("div");
-      btns.className = "winbtns";
-
-      const minBtn = document.createElement("div");
-      minBtn.className = "wbtn";
-      minBtn.textContent = "—";
-      minBtn.title = "Minimer";
-      minBtn.addEventListener("click", () => {
-        win.style.display = "none";
-        toast("Minimert", "Vinduet gjemmer seg. Klikk på desktop for å hente det tilbake.");
-        setDopamine(-2);
+      const { titlebar, minBtn, maxBtn, closeBtn } = createTitlebar(
+        "",
+        "EmblaOS Kontrollpanel",
+        "Status: Barbie rosa, men stabil-ish"
+      );
+      const controls = attachWindowInteractions(win, titlebar, {
+        defaultLeft: "60px",
+        defaultTop: "72px",
+        onClose: () => {
+          win = null;
+          toast("Lukket", "Kontrollpanelet er borte. Men du er fortsatt deg.");
+          setDopamine(-4);
+        },
+        onMinimize: () => {
+          toast("Minimert", "Vinduet gjemmer seg. Klikk på desktop for å hente det tilbake.");
+          setDopamine(-2);
+        }
       });
 
-      const maxBtn = document.createElement("div");
-      maxBtn.className = "wbtn";
-      maxBtn.textContent = "▢";
-      maxBtn.title = "Maksimer";
+      minBtn.addEventListener("click", controls.minimize);
       maxBtn.addEventListener("click", () => {
-        const isMax = win.dataset.max === "1";
-        if (!isMax) {
-          win.dataset.prev = JSON.stringify({
-            left: win.style.left, top: win.style.top,
-            width: win.style.width, height: win.style.height
-          });
-          win.style.left = "12px";
-          win.style.top = "12px";
-          win.style.width = "calc(100% - 24px)";
-          win.style.height = "calc(100% - 24px)";
-          win.style.resize = "none";
-          win.dataset.max = "1";
-          toast("Maksimert", "Mer plass. Samme hjerne.");
-        } else {
-          const prev = JSON.parse(win.dataset.prev || "{}");
-          win.style.left = prev.left || "60px";
-          win.style.top = prev.top || "72px";
-          win.style.width = prev.width || "";
-          win.style.height = prev.height || "";
-          win.style.resize = "both";
-          win.dataset.max = "0";
-          toast("Normal", "Tilbake til standard størrelse.");
-        }
+        const isMax = controls.toggleMaximize();
+        toast(isMax ? "Maksimert" : "Normal", isMax ? "Mer plass. Samme hjerne." : "Tilbake til standard størrelse.");
         setDopamine(+1);
       });
-
-      const closeBtn = document.createElement("div");
-      closeBtn.className = "wbtn close";
-      closeBtn.textContent = "×";
-      closeBtn.title = "Lukk";
-      closeBtn.addEventListener("click", () => {
-        win.remove();
-        win = null;
-        toast("Lukket", "Kontrollpanelet er borte. Men du er fortsatt deg.");
-        setDopamine(-4);
-      });
-
-      btns.append(minBtn,maxBtn,closeBtn);
-      titlebar.append(left, btns);
-
-      // Dragging
-      let dragging = false;
-      let startX=0, startY=0, startL=0, startT=0;
-      titlebar.addEventListener("mousedown", (e) => {
-        if (win.dataset.max === "1") return;
-        dragging = true;
-        win.style.zIndex = String(++zTop);
-        startX = e.clientX; startY = e.clientY;
-        startL = parseInt(win.style.left || "60", 10);
-        startT = parseInt(win.style.top || "72", 10);
-      });
-      window.addEventListener("mousemove", (e) => {
-        if (!dragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        const nl = Math.max(0, Math.min(window.innerWidth - 120, startL + dx));
-        const nt = Math.max(0, Math.min(window.innerHeight - 120, startT + dy));
-        win.style.left = nl + "px";
-        win.style.top = nt + "px";
-      });
-      window.addEventListener("mouseup", () => dragging = false);
+      closeBtn.addEventListener("click", controls.close);
 
       const content = document.createElement("div");
       content.className = "content";
@@ -1369,6 +1570,7 @@
           <h3>Hurtigknapper</h3>
           <p class="muted" style="margin:0 0 10px;">B = FORNEBU BADDIE · P = Boss Mode · R = Utblåsing · F8 = Panikk</p>
           <div class="sideactions">
+            <button class="btn" id="openLedger">Åpne 20:48</button>
             <button class="btn danger" id="panic">PANIKK-KNAPP</button>
           </div>
         </div>
@@ -1479,8 +1681,10 @@
 
       // Sidebar hooks
       const panicBtn = win.querySelector("#panic");
+      const openLedgerBtn = win.querySelector("#openLedger");
 
       if (panicBtn) panicBtn.addEventListener("click", () => panicMode());
+      if (openLedgerBtn) openLedgerBtn.addEventListener("click", () => buildLedgerWindow());
 
       initReactionGame(win);
       initTapRushGame(win);
@@ -1489,11 +1693,101 @@
       initWordleGame(win);
     }
 
+    function buildLedgerWindow() {
+      if (ledgerWin && ledgerWin.isConnected) {
+        ledgerWin.style.display = "";
+        ledgerWin.style.zIndex = String(++zTop);
+        return;
+      }
+
+      ledgerWin = document.createElement("div");
+      ledgerWin.className = "window stealthWindow";
+      const ledgerLeft = Math.max(16, Math.min(window.innerWidth - 440, 850));
+      const ledgerTop = Math.max(72, Math.min(window.innerHeight - 460, 92));
+      ledgerWin.style.left = `${ledgerLeft}px`;
+      ledgerWin.style.top = `${ledgerTop}px`;
+      ledgerWin.style.width = "min(420px, calc(100vw - 32px))";
+      ledgerWin.style.height = "min(620px, 78vh)";
+      ledgerWin.style.minWidth = "320px";
+      ledgerWin.style.minHeight = "420px";
+      ledgerWin.style.resize = "both";
+      ledgerWin.style.zIndex = String(++zTop);
+
+      const { titlebar, minBtn, maxBtn, closeBtn } = createTitlebar(
+        "stealthIcon",
+        "20:48-matrise",
+        "Diskré driftsovervåkning (helt sikkert)"
+      );
+      const controls = attachWindowInteractions(ledgerWin, titlebar, {
+        defaultLeft: `${ledgerLeft}px`,
+        defaultTop: `${ledgerTop}px`,
+        onClose: () => {
+          ledgerWin = null;
+          toast("Lukket", "20:48-vinduet ble skjult fra omverdenen.");
+        },
+        onMinimize: () => {
+          toast("Minimert", "20:48-matrisen later som den aldri var her.");
+        }
+      });
+
+      minBtn.addEventListener("click", controls.minimize);
+      maxBtn.addEventListener("click", () => {
+        const isMax = controls.toggleMaximize();
+        toast(isMax ? "Maksimert" : "Normal", isMax ? "Matrisen fikk mer plass." : "Matrisen er tilbake i diskret størrelse.");
+      });
+      closeBtn.addEventListener("click", controls.close);
+
+      const body = document.createElement("div");
+      body.className = "windowBody";
+      body.innerHTML = `
+        <div class="ledgerWindowLayout">
+          <div class="stealthCard" style="border-radius:16px; padding:12px;">
+            <div class="ledgerSummary">
+              <div>
+                <h2 style="margin:0 0 6px;">Diskré modus: 20:48-matrise</h2>
+                <div class="muted">2048 i eget vindu, men fortsatt forkledd som rolig tallarbeid.</div>
+              </div>
+              <div class="stealthBadge">Lav profil</div>
+            </div>
+          </div>
+
+          <div class="stealthCard" style="border-radius:16px; padding:12px;">
+            <div class="gameWrap">
+              <div class="stealthMeta">
+                <div class="stealthStat">
+                  <span>Statussum</span>
+                  <b id="ledgerScore">0</b>
+                </div>
+                <div class="stealthStat">
+                  <span>Beste sum</span>
+                  <b id="ledgerBest">0</b>
+                </div>
+                <div class="stealthStat">
+                  <span>Høyeste blokk</span>
+                  <b id="ledgerTop">0</b>
+                </div>
+              </div>
+              <div class="ledgerBoard" id="ledgerBoard" aria-label="2048 matrisespill"></div>
+              <div class="ledgerHint" id="ledgerHint">Bruk piltaster eller WASD for å flytte. “20:48” ser ut som driftstall, men er faktisk 2048.</div>
+              <div class="ledgerControls">
+                <button class="btn primary" id="ledgerReset">Ny matrise</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      ledgerWin.append(titlebar, body);
+      els.desktop.appendChild(ledgerWin);
+      initStealth2048Game(ledgerWin);
+    }
+
     // --- Mini game: Reaction test ---
     const BEST_KEY = "emblaos_best_ms_v3";
     const TAP_BEST_KEY = "emblaos_tap_best_v1";
     const GUESS_BEST_KEY = "emblaos_guess_best_v1";
     const QUIZ_BEST_STREAK_KEY = "emblaos_quiz_best_streak_v1";
+    const LEDGER_2048_KEY = "emblaos_2048_best_v1";
     const WORDLE_STATS_KEY = "emblaos_wordle_stats_v1";
     let gameState = "idle"; // idle | waiting | go
     let goAt = 0;
@@ -1993,6 +2287,211 @@ const bank = [
     renderQuestion();
   });
 }
+
+    function initStealth2048Game(scope){
+      const boardEl = scope.querySelector("#ledgerBoard");
+      const scoreEl = scope.querySelector("#ledgerScore");
+      const bestEl = scope.querySelector("#ledgerBest");
+      const topEl = scope.querySelector("#ledgerTop");
+      const hintEl = scope.querySelector("#ledgerHint");
+      const resetBtn = scope.querySelector("#ledgerReset");
+      if (!boardEl || !scoreEl || !bestEl || !topEl || !hintEl || !resetBtn) return;
+
+      const size = 4;
+      let board = Array.from({ length: size }, () => Array(size).fill(0));
+      let score = 0;
+      let gameOver = false;
+      let won = false;
+
+      function getBest(){
+        const n = Number(localStorage.getItem(LEDGER_2048_KEY) || "0");
+        return Number.isFinite(n) && n > 0 ? n : 0;
+      }
+
+      function setBest(next){
+        if (next > getBest()) {
+          localStorage.setItem(LEDGER_2048_KEY, String(next));
+        }
+      }
+
+      function highestTile(){
+        return board.flat().reduce((max, value) => Math.max(max, value), 0);
+      }
+
+      function emptyCells(){
+        const cells = [];
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            if (!board[y][x]) cells.push({ x, y });
+          }
+        }
+        return cells;
+      }
+
+      function spawnTile(){
+        const empty = emptyCells();
+        if (!empty.length) return false;
+        const { x, y } = pick(empty);
+        board[y][x] = Math.random() < 0.9 ? 2 : 4;
+        return true;
+      }
+
+      function updateMeta(message){
+        scoreEl.textContent = String(score);
+        bestEl.textContent = String(getBest());
+        topEl.textContent = String(highestTile());
+        if (message) hintEl.textContent = message;
+      }
+
+      function drawBoard(){
+        boardEl.innerHTML = "";
+        board.flat().forEach((value) => {
+          const cell = document.createElement("div");
+          cell.className = `ledgerCell ${value ? `tile-${Math.min(value, 2048)}` : "empty"}`;
+          cell.textContent = value ? String(value) : "·";
+          boardEl.appendChild(cell);
+        });
+      }
+
+      function compactLine(line){
+        const filtered = line.filter(Boolean);
+        const merged = [];
+        let gained = 0;
+
+        for (let i = 0; i < filtered.length; i++) {
+          const current = filtered[i];
+          if (filtered[i + 1] === current) {
+            const combined = current * 2;
+            merged.push(combined);
+            gained += combined;
+            i += 1;
+          } else {
+            merged.push(current);
+          }
+        }
+
+        while (merged.length < size) merged.push(0);
+        return {
+          line: merged,
+          gained,
+          moved: merged.some((value, index) => value !== line[index]),
+        };
+      }
+
+      function canMove(){
+        if (emptyCells().length) return true;
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const value = board[y][x];
+            if (x < size - 1 && board[y][x + 1] === value) return true;
+            if (y < size - 1 && board[y + 1][x] === value) return true;
+          }
+        }
+        return false;
+      }
+
+      function move(direction){
+        if (gameOver) return;
+
+        let movedAny = false;
+        let gainedTotal = 0;
+
+        if (direction === "left" || direction === "right") {
+          board = board.map((row) => {
+            const source = direction === "right" ? [...row].reverse() : [...row];
+            const result = compactLine(source);
+            movedAny ||= result.moved;
+            gainedTotal += result.gained;
+            return direction === "right" ? result.line.reverse() : result.line;
+          });
+        } else {
+          const nextBoard = Array.from({ length: size }, () => Array(size).fill(0));
+          for (let x = 0; x < size; x++) {
+            const column = board.map((row) => row[x]);
+            const source = direction === "down" ? [...column].reverse() : column;
+            const result = compactLine(source);
+            movedAny ||= result.moved;
+            gainedTotal += result.gained;
+            const resolved = direction === "down" ? result.line.reverse() : result.line;
+            resolved.forEach((value, y) => {
+              nextBoard[y][x] = value;
+            });
+          }
+          board = nextBoard;
+        }
+
+        if (!movedAny) return;
+
+        score += gainedTotal;
+        setBest(score);
+        spawnTile();
+        drawBoard();
+
+        const top = highestTile();
+        if (!won && top >= 2048) {
+          won = true;
+          setDopamine(+12);
+          updateMeta("20:48 nådd. Hvis noen spør, si at dette er tallrapportering.");
+          return;
+        }
+
+        if (!canMove()) {
+          gameOver = true;
+          setDopamine(-4);
+          updateMeta("Ingen flere trekk. Start en ny matrise for å rydde opp.");
+          return;
+        }
+
+        updateMeta("Bruk piltaster eller WASD. Ser fortsatt ut som rolig kontorarbeid.");
+      }
+
+      function startRound(){
+        board = Array.from({ length: size }, () => Array(size).fill(0));
+        score = 0;
+        gameOver = false;
+        won = false;
+        spawnTile();
+        spawnTile();
+        drawBoard();
+        updateMeta("Ny matrise klar. På papiret er dette bare kapasitetsplanlegging.");
+      }
+
+      const keyHandler = (e) => {
+        if (!scope.isConnected) {
+          window.removeEventListener("keydown", keyHandler);
+          return;
+        }
+        if (snakeState.active || panicState.active) return;
+
+        const tag = (document.activeElement?.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea") return;
+
+        const direction = ({
+          ArrowUp: "up",
+          ArrowDown: "down",
+          ArrowLeft: "left",
+          ArrowRight: "right",
+          w: "up",
+          a: "left",
+          s: "down",
+          d: "right",
+          W: "up",
+          A: "left",
+          S: "down",
+          D: "right",
+        })[e.key];
+
+        if (!direction) return;
+        e.preventDefault();
+        move(direction);
+      };
+
+      window.addEventListener("keydown", keyHandler);
+      resetBtn.addEventListener("click", startRound);
+
+      bestEl.textContent = String(getBest());
+      startRound();
+    }
 
     // --- Mini game: Wordle ---
     function initWordleGame(scope){
@@ -2633,12 +3132,8 @@ const bank = [
 
     // Desktop click: bring window back if minimized
     els.desktop.addEventListener("click", () => {
-      if (win && win.style.display === "none") {
-        win.style.display = "";
-        win.style.zIndex = String(++zTop);
-        toast("Funnet!", "Vinduet kom tilbake fra den mentale skuffen.");
-        setDopamine(+1);
-      }
+      restoreWindow(win, "Kontrollpanelet");
+      restoreWindow(ledgerWin, "20:48-vinduet");
     });
 
     // Top buttons
@@ -2646,6 +3141,7 @@ const bank = [
     els.laughBtn.addEventListener("click", showLaugh);
     els.hyperfocus.addEventListener("click", startHyperfocus);
     els.rageBtn.addEventListener("click", openRage);
+    els.ledgerLaunch.addEventListener("click", () => buildLedgerWindow());
     els.laughClose.addEventListener("click", () => els.laughBox.classList.remove("show"));
     els.confettiBtn.addEventListener("click", () => {
       launchConfetti(320);
@@ -2736,6 +3232,7 @@ const bank = [
 
     function init() {
       buildMainWindow();
+      buildLedgerWindow();
       setTimeout(() => toast("Velkommen", "EmblaOS er lastet. Alt er under kontroll (nei)."), 450);
 
       if (TOASTS_ENABLED) {
