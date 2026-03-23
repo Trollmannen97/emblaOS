@@ -1721,6 +1721,39 @@
           </div>
 
           <div class="card">
+            <div class="stealthCard" style="border-radius:16px; padding:12px;">
+              <div class="stealthHeader">
+                <div>
+                  <h2 style="margin-bottom:6px;">Diskré modus: 20:48-matrise</h2>
+                  <div class="muted">2048 forkledd som en prioriteringsoversikt hvis noen går forbi.</div>
+                </div>
+                <div class="stealthBadge">Lav profil</div>
+              </div>
+              <div class="gameWrap">
+                <div class="stealthMeta">
+                  <div class="stealthStat">
+                    <span>Statussum</span>
+                    <b id="ledgerScore">0</b>
+                  </div>
+                  <div class="stealthStat">
+                    <span>Beste sum</span>
+                    <b id="ledgerBest">0</b>
+                  </div>
+                  <div class="stealthStat">
+                    <span>Høyeste blokk</span>
+                    <b id="ledgerTop">0</b>
+                  </div>
+                </div>
+                <div class="ledgerBoard" id="ledgerBoard" aria-label="2048 matrisespill"></div>
+                <div class="ledgerHint" id="ledgerHint">Bruk piltaster eller WASD for å flytte. “20:48” ser ut som driftstall, men er faktisk 2048.</div>
+                <div class="ledgerControls">
+                  <button class="btn primary" id="ledgerReset">Ny matrise</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
             <h2>Wordle-modus</h2>
             <div class="muted">Gjett ordet på 5 bokstaver. 6 forsøk, tydelig fargefeedback.</div>
             <div class="gameWrap">
@@ -1759,6 +1792,7 @@
       initTapRushGame(win);
       initNumberGuessGame(win);
       initQuizGame(win);
+      initStealth2048Game(win);
       initWordleGame(win);
     }
 
@@ -2548,6 +2582,7 @@ const bank = [
         spawnTile();
         drawBoard();
         updateMeta("Ny matrise klar. Flytt alle brikkene i én retning for å slå sammen like tall.");
+        updateMeta("Ny matrise klar. På papiret er dette bare kapasitetsplanlegging.");
       }
 
       const keyHandler = (e) => {
