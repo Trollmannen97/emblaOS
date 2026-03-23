@@ -517,6 +517,8 @@
       padding: 8px;
       max-width: 308px;
       margin: 0 auto;
+      gap: 8px;
+      padding: 10px;
       border-radius: 16px;
       border:1px solid rgba(184,190,202,.16);
       background:
@@ -525,7 +527,7 @@
     }
     .ledgerCell{
       aspect-ratio: 1 / 1;
-      min-height: 50px;
+      min-height: 58px;
       border-radius: 12px;
       border:1px solid rgba(193,198,208,.14);
       background: rgba(228,232,238,.05);
@@ -533,7 +535,7 @@
       display:grid;
       place-items:center;
       font-family: var(--mono);
-      font-size: clamp(14px, 2vw, 20px);
+      font-size: clamp(15px, 2.5vw, 22px);
       font-weight: 800;
       letter-spacing: .4px;
       transition: transform .12s ease, background .18s ease, border-color .18s ease;
@@ -606,8 +608,6 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
     }
     .ledgerWindowLayout{
       display:grid;
@@ -632,9 +632,9 @@
     }
     .ledgerPad{
       display:grid;
-      grid-template-columns: repeat(3, 42px);
-      grid-template-rows: repeat(2, 42px);
-      gap:6px;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(2, 48px);
+      gap:8px;
       justify-content:center;
     }
     .ledgerPadBtn{
@@ -642,7 +642,7 @@
       border:1px solid rgba(192,198,208,.18);
       background: rgba(230,234,241,.05);
       color: rgba(244,247,250,.94);
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 900;
       cursor:pointer;
     }
@@ -1725,6 +1725,39 @@
           </div>
 
           <div class="card">
+            <div class="stealthCard" style="border-radius:16px; padding:12px;">
+              <div class="stealthHeader">
+                <div>
+                  <h2 style="margin-bottom:6px;">Diskré modus: 20:48-matrise</h2>
+                  <div class="muted">2048 forkledd som en prioriteringsoversikt hvis noen går forbi.</div>
+                </div>
+                <div class="stealthBadge">Lav profil</div>
+              </div>
+              <div class="gameWrap">
+                <div class="stealthMeta">
+                  <div class="stealthStat">
+                    <span>Statussum</span>
+                    <b id="ledgerScore">0</b>
+                  </div>
+                  <div class="stealthStat">
+                    <span>Beste sum</span>
+                    <b id="ledgerBest">0</b>
+                  </div>
+                  <div class="stealthStat">
+                    <span>Høyeste blokk</span>
+                    <b id="ledgerTop">0</b>
+                  </div>
+                </div>
+                <div class="ledgerBoard" id="ledgerBoard" aria-label="2048 matrisespill"></div>
+                <div class="ledgerHint" id="ledgerHint">Bruk piltaster eller WASD for å flytte. “20:48” ser ut som driftstall, men er faktisk 2048.</div>
+                <div class="ledgerControls">
+                  <button class="btn primary" id="ledgerReset">Ny matrise</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
             <h2>Wordle-modus</h2>
             <div class="muted">Gjett ordet på 5 bokstaver. 6 forsøk, tydelig fargefeedback.</div>
             <div class="gameWrap">
@@ -1763,6 +1796,7 @@
       initTapRushGame(win);
       initNumberGuessGame(win);
       initQuizGame(win);
+      initStealth2048Game(win);
       initWordleGame(win);
     }
 
@@ -2552,6 +2586,7 @@ const bank = [
         spawnTile();
         drawBoard();
         updateMeta("Ny matrise klar. Flytt alle brikkene i én retning for å slå sammen like tall.");
+        updateMeta("Ny matrise klar. På papiret er dette bare kapasitetsplanlegging.");
       }
 
       const keyHandler = (e) => {
