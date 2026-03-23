@@ -445,6 +445,114 @@
       text-align: center;
       font-family: var(--mono);
     }
+    .stealthCard{
+      border-color: rgba(190,196,210,.18);
+      background:
+        linear-gradient(180deg, rgba(245,247,250,.035), rgba(245,247,250,.015)),
+        rgba(16,19,28,.38);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .stealthHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .stealthBadge{
+      padding: 5px 9px;
+      border-radius: 999px;
+      border:1px solid rgba(186,192,205,.18);
+      background: rgba(226,230,238,.06);
+      color: rgba(227,231,240,.78);
+      font-size: 11px;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      font-family: var(--mono);
+    }
+    .stealthMeta{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(90px, 1fr));
+      gap:8px;
+    }
+    .stealthStat{
+      border:1px solid rgba(184,190,202,.14);
+      border-radius: 12px;
+      background: rgba(229,232,238,.04);
+      padding: 10px 12px;
+    }
+    .stealthStat span{
+      display:block;
+      color: rgba(218,223,234,.62);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      margin-bottom: 6px;
+    }
+    .stealthStat b{
+      font-family: var(--mono);
+      font-size: 18px;
+      color: rgba(245,247,250,.92);
+    }
+    .ledgerBoard{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      padding: 10px;
+      border-radius: 16px;
+      border:1px solid rgba(184,190,202,.16);
+      background:
+        linear-gradient(180deg, rgba(240,243,248,.045), rgba(240,243,248,.02)),
+        rgba(10,12,18,.28);
+    }
+    .ledgerCell{
+      aspect-ratio: 1 / 1;
+      min-height: 58px;
+      border-radius: 12px;
+      border:1px solid rgba(193,198,208,.14);
+      background: rgba(228,232,238,.05);
+      color: rgba(237,240,245,.9);
+      display:grid;
+      place-items:center;
+      font-family: var(--mono);
+      font-size: clamp(15px, 2.5vw, 22px);
+      font-weight: 800;
+      letter-spacing: .4px;
+      transition: transform .12s ease, background .18s ease, border-color .18s ease;
+    }
+    .ledgerCell.empty{
+      color: transparent;
+      background: rgba(228,232,238,.022);
+    }
+    .ledgerCell.tile-2{background: rgba(214,219,228,.08);}
+    .ledgerCell.tile-4{background: rgba(205,212,223,.12);}
+    .ledgerCell.tile-8{background: rgba(194,203,217,.18);}
+    .ledgerCell.tile-16{background: rgba(183,194,210,.23);}
+    .ledgerCell.tile-32{background: rgba(171,185,203,.28);}
+    .ledgerCell.tile-64{background: rgba(161,176,198,.34);}
+    .ledgerCell.tile-128,
+    .ledgerCell.tile-256,
+    .ledgerCell.tile-512,
+    .ledgerCell.tile-1024,
+    .ledgerCell.tile-2048{
+      background: rgba(147,165,191,.40);
+      border-color: rgba(196,207,223,.28);
+      color:#f6f8fb;
+    }
+    .ledgerHint{
+      border:1px dashed rgba(183,190,202,.18);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: rgba(230,234,241,.025);
+      color: rgba(214,219,229,.72);
+      line-height: 1.4;
+      font-size: 12.5px;
+    }
+    .ledgerControls{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
 
     /* Toasts */
     .toasts{
@@ -1450,6 +1558,39 @@
           </div>
 
           <div class="card">
+            <div class="stealthCard" style="border-radius:16px; padding:12px;">
+              <div class="stealthHeader">
+                <div>
+                  <h2 style="margin-bottom:6px;">Diskré modus: 20:48-matrise</h2>
+                  <div class="muted">2048 forkledd som en prioriteringsoversikt hvis noen går forbi.</div>
+                </div>
+                <div class="stealthBadge">Lav profil</div>
+              </div>
+              <div class="gameWrap">
+                <div class="stealthMeta">
+                  <div class="stealthStat">
+                    <span>Statussum</span>
+                    <b id="ledgerScore">0</b>
+                  </div>
+                  <div class="stealthStat">
+                    <span>Beste sum</span>
+                    <b id="ledgerBest">0</b>
+                  </div>
+                  <div class="stealthStat">
+                    <span>Høyeste blokk</span>
+                    <b id="ledgerTop">0</b>
+                  </div>
+                </div>
+                <div class="ledgerBoard" id="ledgerBoard" aria-label="2048 matrisespill"></div>
+                <div class="ledgerHint" id="ledgerHint">Bruk piltaster eller WASD for å flytte. “20:48” ser ut som driftstall, men er faktisk 2048.</div>
+                <div class="ledgerControls">
+                  <button class="btn primary" id="ledgerReset">Ny matrise</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
             <h2>Wordle-modus</h2>
             <div class="muted">Gjett ordet på 5 bokstaver. 6 forsøk, tydelig fargefeedback.</div>
             <div class="gameWrap">
@@ -1486,6 +1627,7 @@
       initTapRushGame(win);
       initNumberGuessGame(win);
       initQuizGame(win);
+      initStealth2048Game(win);
       initWordleGame(win);
     }
 
@@ -1494,6 +1636,7 @@
     const TAP_BEST_KEY = "emblaos_tap_best_v1";
     const GUESS_BEST_KEY = "emblaos_guess_best_v1";
     const QUIZ_BEST_STREAK_KEY = "emblaos_quiz_best_streak_v1";
+    const LEDGER_2048_KEY = "emblaos_2048_best_v1";
     const WORDLE_STATS_KEY = "emblaos_wordle_stats_v1";
     let gameState = "idle"; // idle | waiting | go
     let goAt = 0;
@@ -1993,6 +2136,211 @@ const bank = [
     renderQuestion();
   });
 }
+
+    function initStealth2048Game(scope){
+      const boardEl = scope.querySelector("#ledgerBoard");
+      const scoreEl = scope.querySelector("#ledgerScore");
+      const bestEl = scope.querySelector("#ledgerBest");
+      const topEl = scope.querySelector("#ledgerTop");
+      const hintEl = scope.querySelector("#ledgerHint");
+      const resetBtn = scope.querySelector("#ledgerReset");
+      if (!boardEl || !scoreEl || !bestEl || !topEl || !hintEl || !resetBtn) return;
+
+      const size = 4;
+      let board = Array.from({ length: size }, () => Array(size).fill(0));
+      let score = 0;
+      let gameOver = false;
+      let won = false;
+
+      function getBest(){
+        const n = Number(localStorage.getItem(LEDGER_2048_KEY) || "0");
+        return Number.isFinite(n) && n > 0 ? n : 0;
+      }
+
+      function setBest(next){
+        if (next > getBest()) {
+          localStorage.setItem(LEDGER_2048_KEY, String(next));
+        }
+      }
+
+      function highestTile(){
+        return board.flat().reduce((max, value) => Math.max(max, value), 0);
+      }
+
+      function emptyCells(){
+        const cells = [];
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            if (!board[y][x]) cells.push({ x, y });
+          }
+        }
+        return cells;
+      }
+
+      function spawnTile(){
+        const empty = emptyCells();
+        if (!empty.length) return false;
+        const { x, y } = pick(empty);
+        board[y][x] = Math.random() < 0.9 ? 2 : 4;
+        return true;
+      }
+
+      function updateMeta(message){
+        scoreEl.textContent = String(score);
+        bestEl.textContent = String(getBest());
+        topEl.textContent = String(highestTile());
+        if (message) hintEl.textContent = message;
+      }
+
+      function drawBoard(){
+        boardEl.innerHTML = "";
+        board.flat().forEach((value) => {
+          const cell = document.createElement("div");
+          cell.className = `ledgerCell ${value ? `tile-${Math.min(value, 2048)}` : "empty"}`;
+          cell.textContent = value ? String(value) : "·";
+          boardEl.appendChild(cell);
+        });
+      }
+
+      function compactLine(line){
+        const filtered = line.filter(Boolean);
+        const merged = [];
+        let gained = 0;
+
+        for (let i = 0; i < filtered.length; i++) {
+          const current = filtered[i];
+          if (filtered[i + 1] === current) {
+            const combined = current * 2;
+            merged.push(combined);
+            gained += combined;
+            i += 1;
+          } else {
+            merged.push(current);
+          }
+        }
+
+        while (merged.length < size) merged.push(0);
+        return {
+          line: merged,
+          gained,
+          moved: merged.some((value, index) => value !== line[index]),
+        };
+      }
+
+      function canMove(){
+        if (emptyCells().length) return true;
+        for (let y = 0; y < size; y++) {
+          for (let x = 0; x < size; x++) {
+            const value = board[y][x];
+            if (x < size - 1 && board[y][x + 1] === value) return true;
+            if (y < size - 1 && board[y + 1][x] === value) return true;
+          }
+        }
+        return false;
+      }
+
+      function move(direction){
+        if (gameOver) return;
+
+        let movedAny = false;
+        let gainedTotal = 0;
+
+        if (direction === "left" || direction === "right") {
+          board = board.map((row) => {
+            const source = direction === "right" ? [...row].reverse() : [...row];
+            const result = compactLine(source);
+            movedAny ||= result.moved;
+            gainedTotal += result.gained;
+            return direction === "right" ? result.line.reverse() : result.line;
+          });
+        } else {
+          const nextBoard = Array.from({ length: size }, () => Array(size).fill(0));
+          for (let x = 0; x < size; x++) {
+            const column = board.map((row) => row[x]);
+            const source = direction === "down" ? [...column].reverse() : column;
+            const result = compactLine(source);
+            movedAny ||= result.moved;
+            gainedTotal += result.gained;
+            const resolved = direction === "down" ? result.line.reverse() : result.line;
+            resolved.forEach((value, y) => {
+              nextBoard[y][x] = value;
+            });
+          }
+          board = nextBoard;
+        }
+
+        if (!movedAny) return;
+
+        score += gainedTotal;
+        setBest(score);
+        spawnTile();
+        drawBoard();
+
+        const top = highestTile();
+        if (!won && top >= 2048) {
+          won = true;
+          setDopamine(+12);
+          updateMeta("20:48 nådd. Hvis noen spør, si at dette er tallrapportering.");
+          return;
+        }
+
+        if (!canMove()) {
+          gameOver = true;
+          setDopamine(-4);
+          updateMeta("Ingen flere trekk. Start en ny matrise for å rydde opp.");
+          return;
+        }
+
+        updateMeta("Bruk piltaster eller WASD. Ser fortsatt ut som rolig kontorarbeid.");
+      }
+
+      function startRound(){
+        board = Array.from({ length: size }, () => Array(size).fill(0));
+        score = 0;
+        gameOver = false;
+        won = false;
+        spawnTile();
+        spawnTile();
+        drawBoard();
+        updateMeta("Ny matrise klar. På papiret er dette bare kapasitetsplanlegging.");
+      }
+
+      const keyHandler = (e) => {
+        if (!scope.isConnected) {
+          window.removeEventListener("keydown", keyHandler);
+          return;
+        }
+        if (snakeState.active || panicState.active) return;
+
+        const tag = (document.activeElement?.tagName || "").toLowerCase();
+        if (tag === "input" || tag === "textarea") return;
+
+        const direction = ({
+          ArrowUp: "up",
+          ArrowDown: "down",
+          ArrowLeft: "left",
+          ArrowRight: "right",
+          w: "up",
+          a: "left",
+          s: "down",
+          d: "right",
+          W: "up",
+          A: "left",
+          S: "down",
+          D: "right",
+        })[e.key];
+
+        if (!direction) return;
+        e.preventDefault();
+        move(direction);
+      };
+
+      window.addEventListener("keydown", keyHandler);
+      resetBtn.addEventListener("click", startRound);
+
+      bestEl.textContent = String(getBest());
+      startRound();
+    }
 
     // --- Mini game: Wordle ---
     function initWordleGame(scope){
