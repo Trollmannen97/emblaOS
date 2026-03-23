@@ -488,7 +488,7 @@
     }
     .stealthMeta{
       display:grid;
-      grid-template-columns: repeat(3, minmax(90px, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap:8px;
     }
     .stealthStat{
@@ -540,20 +540,56 @@
       color: transparent;
       background: rgba(228,232,238,.022);
     }
-    .ledgerCell.tile-2{background: rgba(214,219,228,.08);}
-    .ledgerCell.tile-4{background: rgba(205,212,223,.12);}
-    .ledgerCell.tile-8{background: rgba(194,203,217,.18);}
-    .ledgerCell.tile-16{background: rgba(183,194,210,.23);}
-    .ledgerCell.tile-32{background: rgba(171,185,203,.28);}
-    .ledgerCell.tile-64{background: rgba(161,176,198,.34);}
-    .ledgerCell.tile-128,
-    .ledgerCell.tile-256,
-    .ledgerCell.tile-512,
-    .ledgerCell.tile-1024,
+    .ledgerCell.tile-2{
+      background: linear-gradient(180deg, rgba(232,234,239,.24), rgba(196,201,213,.12));
+      border-color: rgba(220,225,235,.22);
+    }
+    .ledgerCell.tile-4{
+      background: linear-gradient(180deg, rgba(219,226,239,.32), rgba(186,196,214,.16));
+      border-color: rgba(210,220,235,.26);
+    }
+    .ledgerCell.tile-8{
+      background: linear-gradient(180deg, rgba(155,190,255,.44), rgba(90,130,214,.24));
+      border-color: rgba(170,205,255,.34);
+    }
+    .ledgerCell.tile-16{
+      background: linear-gradient(180deg, rgba(105,214,203,.44), rgba(61,140,145,.26));
+      border-color: rgba(130,232,220,.34);
+    }
+    .ledgerCell.tile-32{
+      background: linear-gradient(180deg, rgba(120,221,142,.44), rgba(73,146,99,.28));
+      border-color: rgba(148,238,167,.34);
+    }
+    .ledgerCell.tile-64{
+      background: linear-gradient(180deg, rgba(243,200,91,.48), rgba(176,124,42,.30));
+      border-color: rgba(248,214,132,.36);
+      color: #fffdf7;
+    }
+    .ledgerCell.tile-128{
+      background: linear-gradient(180deg, rgba(255,166,92,.54), rgba(193,95,41,.34));
+      border-color: rgba(255,189,128,.36);
+      color: #fffaf6;
+    }
+    .ledgerCell.tile-256{
+      background: linear-gradient(180deg, rgba(255,118,118,.56), rgba(182,62,80,.34));
+      border-color: rgba(255,150,150,.38);
+      color: #fff8f8;
+    }
+    .ledgerCell.tile-512{
+      background: linear-gradient(180deg, rgba(222,124,255,.58), rgba(143,67,207,.36));
+      border-color: rgba(230,157,255,.38);
+      color: #fff8ff;
+    }
+    .ledgerCell.tile-1024{
+      background: linear-gradient(180deg, rgba(153,131,255,.62), rgba(88,72,199,.40));
+      border-color: rgba(183,170,255,.40);
+      color: #fdfbff;
+    }
     .ledgerCell.tile-2048{
-      background: rgba(147,165,191,.40);
-      border-color: rgba(196,207,223,.28);
-      color:#f6f8fb;
+      background: linear-gradient(180deg, rgba(255,110,205,.68), rgba(198,52,149,.44));
+      border-color: rgba(255,156,223,.46);
+      color:#ffffff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 0 18px rgba(255,110,205,.22);
     }
     .ledgerHint{
       border:1px dashed rgba(183,190,202,.18);
@@ -580,6 +616,39 @@
       gap:12px;
       flex-wrap:wrap;
     }
+    .ledgerHowTo{
+      display:grid;
+      gap:6px;
+      color: rgba(224,229,238,.82);
+      font-size: 12.5px;
+      line-height: 1.45;
+    }
+    .ledgerHowTo b{
+      color: rgba(245,247,250,.94);
+    }
+    .ledgerPad{
+      display:grid;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(2, 48px);
+      gap:8px;
+      justify-content:center;
+    }
+    .ledgerPadBtn{
+      border-radius: 12px;
+      border:1px solid rgba(192,198,208,.18);
+      background: rgba(230,234,241,.05);
+      color: rgba(244,247,250,.94);
+      font-size: 18px;
+      font-weight: 900;
+      cursor:pointer;
+    }
+    .ledgerPadBtn:hover{
+      background: rgba(230,234,241,.08);
+    }
+    .ledgerPadBtn.up{grid-column:2; grid-row:1;}
+    .ledgerPadBtn.left{grid-column:1; grid-row:2;}
+    .ledgerPadBtn.down{grid-column:2; grid-row:2;}
+    .ledgerPadBtn.right{grid-column:3; grid-row:2;}
 
     /* Toasts */
     .toasts{
@@ -1783,6 +1852,11 @@
               </div>
               <div class="stealthBadge">Lav profil</div>
             </div>
+            <div class="ledgerHowTo" style="margin-top:10px;">
+              <div><b>Slik spiller du:</b> Flytt alle brikkene i samme retning med piltaster, WASD eller knappene under.</div>
+              <div><b>Målet:</b> Slå sammen like tall til du får <b>2048</b>.</div>
+              <div><b>Eksempel:</b> 2 + 2 = 4, 4 + 4 = 8, osv.</div>
+            </div>
           </div>
 
           <div class="stealthCard" style="border-radius:16px; padding:12px;">
@@ -1800,11 +1874,21 @@
                   <span>Høyeste blokk</span>
                   <b id="ledgerTop">0</b>
                 </div>
+                <div class="stealthStat">
+                  <span>Status</span>
+                  <b id="ledgerState">Pågår</b>
+                </div>
               </div>
               <div class="ledgerBoard" id="ledgerBoard" aria-label="2048 matrisespill"></div>
               <div class="ledgerHint" id="ledgerHint">Bruk piltaster eller WASD for å flytte. “20:48” ser ut som driftstall, men er faktisk 2048.</div>
               <div class="ledgerControls">
                 <button class="btn primary" id="ledgerReset">Ny matrise</button>
+                <div class="ledgerPad" aria-label="Retningsknapper for 2048">
+                  <button class="ledgerPadBtn up" data-dir="up" aria-label="Opp">↑</button>
+                  <button class="ledgerPadBtn left" data-dir="left" aria-label="Venstre">←</button>
+                  <button class="ledgerPadBtn down" data-dir="down" aria-label="Ned">↓</button>
+                  <button class="ledgerPadBtn right" data-dir="right" aria-label="Høyre">→</button>
+                </div>
               </div>
             </div>
           </div>
@@ -2327,9 +2411,11 @@ const bank = [
       const scoreEl = scope.querySelector("#ledgerScore");
       const bestEl = scope.querySelector("#ledgerBest");
       const topEl = scope.querySelector("#ledgerTop");
+      const stateEl = scope.querySelector("#ledgerState");
       const hintEl = scope.querySelector("#ledgerHint");
       const resetBtn = scope.querySelector("#ledgerReset");
-      if (!boardEl || !scoreEl || !bestEl || !topEl || !hintEl || !resetBtn) return;
+      const dirButtons = Array.from(scope.querySelectorAll("[data-dir]"));
+      if (!boardEl || !scoreEl || !bestEl || !topEl || !stateEl || !hintEl || !resetBtn) return;
 
       const size = 4;
       let board = Array.from({ length: size }, () => Array(size).fill(0));
@@ -2374,6 +2460,7 @@ const bank = [
         scoreEl.textContent = String(score);
         bestEl.textContent = String(getBest());
         topEl.textContent = String(highestTile());
+        stateEl.textContent = gameOver ? "Stoppet" : won ? "Vunnet" : "Pågår";
         if (message) hintEl.textContent = message;
       }
 
@@ -2454,7 +2541,14 @@ const bank = [
           board = nextBoard;
         }
 
-        if (!movedAny) return;
+        if (!movedAny) {
+          if (!canMove()) {
+            gameOver = true;
+            setDopamine(-4);
+            updateMeta("Ingen gyldige trekk igjen. Spillet er over til du starter en ny matrise.");
+          }
+          return;
+        }
 
         score += gainedTotal;
         setBest(score);
@@ -2465,18 +2559,18 @@ const bank = [
         if (!won && top >= 2048) {
           won = true;
           setDopamine(+12);
-          updateMeta("20:48 nådd. Hvis noen spør, si at dette er tallrapportering.");
+          updateMeta("20:48 nådd. Du vant. Du kan starte på nytt eller fortsette å stable tall.");
           return;
         }
 
         if (!canMove()) {
           gameOver = true;
           setDopamine(-4);
-          updateMeta("Ingen flere trekk. Start en ny matrise for å rydde opp.");
+          updateMeta("Ingen flere trekk. Spillet stoppet fordi brettet er fullt og ingen ruter kan slås sammen.");
           return;
         }
 
-        updateMeta("Bruk piltaster eller WASD. Ser fortsatt ut som rolig kontorarbeid.");
+        updateMeta("Flytt med piltaster, WASD eller pilknappene. Like tall slår seg sammen.");
       }
 
       function startRound(){
@@ -2487,6 +2581,7 @@ const bank = [
         spawnTile();
         spawnTile();
         drawBoard();
+        updateMeta("Ny matrise klar. Flytt alle brikkene i én retning for å slå sammen like tall.");
         updateMeta("Ny matrise klar. På papiret er dette bare kapasitetsplanlegging.");
       }
 
@@ -2522,6 +2617,12 @@ const bank = [
 
       window.addEventListener("keydown", keyHandler);
       resetBtn.addEventListener("click", startRound);
+      dirButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const direction = btn.dataset.dir;
+          if (direction) move(direction);
+        });
+      });
 
       bestEl.textContent = String(getBest());
       startRound();
